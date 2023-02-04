@@ -1,7 +1,7 @@
 package windows;
 
 import windows.availabilityWindow.main_productWindow;
-import windows.checksWindow.main_iWindow;
+import windows.checksWindow.main_cWindow;
 import windows.ordersWindow.*;
 import windows.tablesWindow.*;
 
@@ -26,7 +26,7 @@ public class main_Window extends abstractUpdater {
         setFrame(theFrame);
         setManagerDB(new managerDB());
         theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        theFrame.setSize(600, 600);
+        theFrame.setSize(1000, 650);
         theFrame.setVisible(true);
         theFrame.setLocationRelativeTo(null);
         updateToThisMenu();
@@ -53,7 +53,7 @@ public class main_Window extends abstractUpdater {
         // Check-in/Check-out button
         button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                main_iWindow checkWdw = new main_iWindow(temp);
+                main_cWindow checkWdw = new main_cWindow(temp);
                 checkWdw.updateToThisMenu();
             }
         });

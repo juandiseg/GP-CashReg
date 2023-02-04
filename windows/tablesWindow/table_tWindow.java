@@ -2,61 +2,52 @@ package windows.tablesWindow;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JTextField;
-import util.abstractAddWindow;
+
+import iLayouts.FlowLayoutApplyer;
+import windows.main_Window;
 import util.abstractUpdater;
+
+import javax.swing.JButton;
 import javax.swing.JLabel;
 
-public class table_tWindow extends abstractAddWindow {
+public class table_tWindow extends abstractUpdater {
 
-    private JLabel enterName = new JLabel("Enter the provider's NAME: ");
-    private JLabel enterEmail = new JLabel("Enter the provider's EMAIL: ");
-    private JTextField textFieldName = new JTextField();
-    private JTextField textFieldEmail = new JTextField();
+    private JLabel statusLabel = new JLabel();
+    private JButton viewOrder = new JButton("View Order");
+    private JButton backButton = new JButton("Back");
+    // private numberInput keypad = new numberInput(theFrame);
+    private int table_id;
+    private String status;
 
-    public table_tWindow(abstractUpdater previousWindow) {
-        super(previousWindow, "Provider", true);
+    public table_tWindow(abstractUpdater previousWindow, int table_id) {
+        super(previousWindow, new FlowLayoutApplyer(theFrame));
+        this.table_id = table_id;
+        this.getStatus();
+    }
+
+    public String getStatus() {
+        int is_empty = theManagerDB.getTableStatus(table_id);
+        if(is_empty == 1) status = "EMPTY";
+        if(is_empty == 0) status = "FULL";
+        statusLabel = new JLabel("Table status: " + status);
+        return status;
     }
 
     @Override
-    public void addToFrame() {
-        theFrame.add(enterName);
-        theFrame.add(textFieldName);
-        theFrame.add(enterEmail);
-        theFrame.add(textFieldEmail);
-        theFrame.add(getAddButton());
-        theFrame.add(getBackButton());
-    }
-
-    @Override
-    public void setBounds() {
-        getAddButton().setBounds(80, 90, 130, 20);
-        getBackButton().setBounds(400, 400, 120, 80);
-        getInputSuccesful().setBounds(250, 90, 250, 25);
-        getInputError().setBounds(250, 90, 300, 25);
-        enterName.setBounds(10, 20, 160, 25);
-        textFieldName.setBounds(180, 20, 165, 25);
-        enterEmail.setBounds(10, 50, 160, 25);
-        textFieldEmail.setBounds(180, 50, 165, 25);
+    public void addComponents() {
+        theFrame.setTitle("Tables menu");
+        theFrame.add(statusLabel);
+        if(getStatus() == "FULL") theFrame.add(viewOrder);
+        theFrame.add(backButton);
+        // theFrame.add(keypad.setInput());
     }
 
     @Override
     public void addActionListeners() {
-        getAddButton().addActionListener(new ActionListener() {
+        backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String name = textFieldName.getText();
-                String email = textFieldEmail.getText();
-                if (name.isEmpty() || email.isEmpty()) {
-                    printErrorGUI();
-                    return;
-                }
-                if (theManagerDB.addProvider(name, email)) {
-                    printSuccessGUI();
-                } else {
-                    printErrorGUI();
-                }
+                new main_tWindow(new main_Window()).updateToThisMenu();
             }
         });
     }
-
 }

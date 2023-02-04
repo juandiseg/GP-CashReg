@@ -1,7 +1,6 @@
 package util;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -14,10 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
-public class numberInput extends JPanel implements ActionListener {
+public class numberInput extends JFrame implements ActionListener {
 	
 	JLabel display;
 	JButton numButton;
@@ -86,16 +83,15 @@ public class numberInput extends JPanel implements ActionListener {
 		display.setText(textThere.concat(additionalText));
 	}
 	
-	public static void main(String[] args) {
+	public JPanel setInput() {
 		
 		//create and set up the window.
-		JFrame frame = new JFrame("Numeric Keyboard");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel panel = new JPanel();
 		
 		//set up the content pane.
-		frame.getContentPane().add(new numberInput(frame));
-        
-		frame.pack();
-		frame.setVisible(true);
+		panel.add(new numberInput(panel));
+		panel.setVisible(true);
+
+		return panel;
 	}
 }
