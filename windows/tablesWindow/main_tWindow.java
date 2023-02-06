@@ -50,5 +50,4 @@ public class main_tWindow extends abstractUpdater {
             }
         });
     }
-
 }

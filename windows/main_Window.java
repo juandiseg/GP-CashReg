@@ -61,8 +61,8 @@ public class main_Window extends abstractUpdater {
         // Products availability button
         button3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                main_productWindow availabilityWdw = new main_productWindow(temp);
-                availabilityWdw.updateToThisMenu();
+                // main_productWindow availabilityWdw = new main_productWindow(temp);
+                // availabilityWdw.updateToThisMenu();
             }
         });
 

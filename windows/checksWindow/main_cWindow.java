@@ -30,14 +30,14 @@ public class main_cWindow extends abstractUpdater {
         abstractUpdater temp = this;
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // add_iWindow tempWind = new add_iWindow(temp);
-                // tempWind.updateToThisMenu();
+                check_cWindow tempWind = new check_cWindow(temp, button1.getText());
+                tempWind.updateToThisMenu();
             }
         });
         button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // edit_iWindow tempWind = new edit_iWindow(temp);
-                // tempWind.updateToThisMenu();
+                check_cWindow tempWind = new check_cWindow(temp, button2.getText());
+                tempWind.updateToThisMenu();
             }
         });
 

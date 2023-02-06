@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1059,7 +1060,7 @@ public class managerDB {
     public ArrayList<orderItems> getOrderItems(int order_id) {
         ArrayList<orderItems> tempList = new ArrayList<orderItems>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT products.name, orders_items.quantity FROM products, orders_items WHERE orders_items.order_id = " + order_id + ";";
+            String query = "SELECT products.name, orders_items.quantity FROM products INNER JOIN orders_items ON products.product_id = orders_items.product_id WHERE orders_items.order_id = " + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -1078,7 +1079,7 @@ public class managerDB {
         }
     }
 
-    private int getLastOrderID() {
+    public int getLastOrderID() {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT order_id FROM orders_summary ORDER BY order_id DESC LIMIT 1;";
             try (Statement stmt = connection.createStatement()) {
@@ -1118,4 +1119,181 @@ public class managerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
+
+    public int getOrderID(int table_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT order_id FROM tables WHERE table_id =  " + table_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    int orderID = rs.getInt("order_id");
+                    connection.close();
+                    return orderID;
+                }
+                return -1;
+            } catch (Exception e) {
+                System.out.println(e);
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public int checkEmployeeID(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT employee_id FROM employees WHERE employee_id =  " + employee_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                connection.close();
+                return 1;
+                }
+                JOptionPane.showMessageDialog(null, "No username found", "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                return 0;
+            } catch (Exception e) {
+                System.out.println(e);
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private String getStartShift(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT start_shift FROM employees WHERE employee_id =  "+ employee_id +";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String start_shift = rs.getString("start_shift");
+                    connection.close();
+                    return start_shift;
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private String getEndShift(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT end_shift FROM employees WHERE employee_id =  "+ employee_id +";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String end_shift = rs.getString("end_shift");
+                    connection.close();
+                    return end_shift;
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private String getLastCheckIn(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT start_shift FROM employees_schedule WHERE employee_id =  "+ employee_id +" ORDER BY shift_date, start_shift DESC LIMIT 1;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String start_shift = rs.getString("start_shift");
+                    connection.close();
+                    return start_shift;
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private String getLastCheckOut(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT end_shift FROM employees_schedule WHERE employee_id =  "+ employee_id +" ORDER BY shift_date, start_shift DESC LIMIT 1;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String end_shift = rs.getString("end_shift");
+                    connection.close();
+                    return end_shift;
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public boolean checkIn(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "INSERT INTO employees_schedule VALUES (" + employee_id + ", '" + java.time.LocalDate.now() + "', '" + 
+                getStartShift(employee_id) + "', '" + getEndShift(employee_id) + "', '" + java.time.LocalTime.now() + "', NULL, NULL);";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+                return true;
+            } catch (Exception e) {
+                System.out.println(e);
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public ArrayList<category> getAllCategories() {
+        ArrayList<category> tempList = new ArrayList<category>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT category_id, category_name FROM categories";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int categoryID = rs.getInt("category_id");
+                    String name = rs.getString("category_name");
+                    tempList.add(new category(categoryID, name));
+                }
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    // public boolean checkOut(int employee_id) {
+    //     try (Connection connection = DriverManager.getConnection(url, user, password)) {
+    //         String query = "UPDATE employees_schedule SET real_out = '" + java.time.LocalTime.now() + "' WHERE start_shift = '" + getLastCheckIn(employee_id) + 
+    //             "' AND shift_date = '" + java.time.LocalDate.now() + "';";
+    //         try (Statement stmt = connection.createStatement()) {
+    //             stmt.executeUpdate(query);
+    //             connection.close();
+    //             return true;
+    //         } catch (Exception e) {
+    //             System.out.println(e);
+    //             return false;
+    //         }
+    //     } catch (SQLException e) {
+    //         throw new IllegalStateException("Cannot connect the database!", e);
+    //     }
+    // }
 }

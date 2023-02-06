@@ -39,11 +39,11 @@ public class assist_add_oWindow extends abstractUpdater {
         abstractUpdater temp = this;
         
         for (int i=0; i < freeTables.size(); i++) {
-            int table_id = freeTables.get(i);
+            int order_id = theManagerDB.getLastOrderID() + 1;
             buttons.get(i).addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    // add_oWindow tempWind = new add_oWindow(temp, table_id);
-                    // tempWind.updateToThisMenu();
+                    add_oWindow tempWind = new add_oWindow(temp, order_id);
+                    tempWind.updateToThisMenu();
                 }
             });
         }
