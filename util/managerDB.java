@@ -1,996 +1,22 @@
 package util;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Stack;
-import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.JOptionPane;
 
+import objects.*;
+
 import java.sql.ResultSet;
-import componentsFood.*;
 
 public class managerDB {
 
     private final static String url = "jdbc:mysql://localhost:3306/beatneat";
     private final String user = "isabel"; // Change to your local user
     private final String password = "Isabel"; // Change to your local password
-
-    public boolean addProvider(String name, String email) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            int provID = getLastProvID() + 1;
-            String query = "INSERT INTO providers VALUES (" + provID + ", '" + name + "', '" + email + "', 1);";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private int getLastProvID() {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT provider_id FROM beatneat.providers ORDER BY provider_id DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int providerID = rs.getInt("provider_id");
-                    connection.close();
-                    return providerID;
-                }
-                return -1;
-            } catch (Exception e) {
-                System.out.println(e);
-                return -1;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private int getLastIngredientID() {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT ingredient_id FROM beatneat.ingredients ORDER BY ingredient_id DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int providerID = rs.getInt("ingredient_id");
-                    connection.close();
-                    return providerID;
-                }
-                return -1;
-            } catch (Exception e) {
-                System.out.println(e);
-                return -1;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private int getLastProductID() {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT product_id FROM producst ORDER BY product_id DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int providerID = rs.getInt("product_id");
-                    connection.close();
-                    return providerID;
-                }
-                return -1;
-            } catch (Exception e) {
-                System.out.println(e);
-                return -1;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public product addProduct(String date, String name, float price, boolean active) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            int productID = getLastProductID() + 1;
-            String query = "INSERT INTO products VALUES (" + productID + ", '" + date + "', '" + name + "', " + price
-                    + ", " + active + ");";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return new product(productID, date, name, price, active);
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean addIngredientsToProduct(int productID, int ingredientID, String date, float quantity) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "INSERT INTO products_ingredients VALUES (" + productID + ", " + ingredientID + ", '" + date
-                    + "', " + quantity + ")";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-            } catch (Exception a) {
-                System.out.println(a);
-                return false;
-            }
-            return true;
-        } catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-    }
-
-    public int addIngredient(int provID, String date, String name, String price, int amount, boolean in_inventory,
-            boolean active) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            int ingrID = getLastIngredientID() + 1;
-            String query = "INSERT INTO ingredients VALUES (" + ingrID + ", " + provID + ", '" + date + "', '" + name
-                    + "', " + price + ", " + amount + ", " + in_inventory + ", " + active + ");";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return ingrID;
-            } catch (Exception e) {
-                System.out.println(e);
-                return -1;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean editIngredient(int ingID, int provID, String date, String name, double price, int amount,
-            boolean in_inventory, boolean active) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE ingredients SET provider_id = " + provID + ", ingredients_date = '" + date
-                    + "', name = '" + name + "', price = " + price + ", amount = " + amount + ", in_inventory = "
-                    + in_inventory + ", active = " + active + " WHERE provider_id = " + Integer.toString(ingID);
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<provider> getAllProviders() {
-        ArrayList<provider> tempList = new ArrayList<provider>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM providers";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int providerID = rs.getInt("provider_id");
-                    String name = rs.getString("name");
-                    String email = rs.getString("email");
-                    tempList.add(new provider(providerID, name, email));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public provider getProvider(int ID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM providers WHERE provider_id = " + Integer.toString(ID);
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int providerID = rs.getInt("provider_id");
-                    String name = rs.getString("name");
-                    String email = rs.getString("email");
-                    provider temp = new provider(providerID, name, email);
-                    connection.close();
-                    return temp;
-                }
-                connection.close();
-                return null;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean editProvider(int ID, String name, String email) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE providers SET name = '" + name + "', email = '" + email
-                    + "' WHERE provider_id = " + Integer.toString(ID);
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private int getLastAllergenID() {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT allergen_id FROM beatneat.allergens ORDER BY allergen_id DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int allergenID = rs.getInt("allergen_id");
-                    connection.close();
-                    return allergenID;
-                }
-                return -1;
-            } catch (Exception e) {
-                System.out.println(e);
-                return -1;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public allergen getAllergen(int ID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM allergens WHERE allergen_id = " + ID;
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int allergenID = rs.getInt("allergen_id");
-                    String name = rs.getString("name");
-                    allergen temp = new allergen(allergenID, name);
-                    connection.close();
-                    return temp;
-                }
-                connection.close();
-                return null;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean addAllergen(String name) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String queryTest = "SELECT * FROM allergens WHERE name LIKE '%" + name + "%' LIMIT 1";
-            try (Statement stmt1 = connection.createStatement()) {
-                ResultSet rs = stmt1.executeQuery(queryTest);
-                if (rs.next()) {
-                    JOptionPane.showMessageDialog(null, "There is a similar entry with that name.", "Error",
-                            JOptionPane.WARNING_MESSAGE);
-                    return false;
-                }
-            }
-            int allergenID = getLastAllergenID() + 1;
-            String query = "INSERT INTO allergens VALUES (" + allergenID + ", '" + name + "');";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<allergen> getAllAllergens() {
-        ArrayList<allergen> tempList = new ArrayList<allergen>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM allergens";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int allergenID = rs.getInt("allergen_id");
-                    String name = rs.getString("name");
-                    tempList.add(new allergen(allergenID, name));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<allergen> getSelectedAllergens(ingredient theIngredient) {
-        ArrayList<allergen> tempList = new ArrayList<allergen>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT allergen_id, name FROM ingredients_allergens NATURAL JOIN allergens WHERE ingredient_id = "
-                    + theIngredient.getId();
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int allergenID = rs.getInt("allergen_id");
-                    String name = rs.getString("name");
-                    tempList.add(new allergen(allergenID, name));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<ingredient> getSelectedIngredients(product theProduct) {
-        ArrayList<ingredient> tempList = new ArrayList<ingredient>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients WHERE ingredient_id IN (SELECT DISTINCT ingredient_id FROM ingredients NATURAL JOIN products_ingredients WHERE product_id = "
-                    + theProduct.getId()
-                    + ") AND (ingredient_id, ingredients_date) IN (SELECT ingredient_id, MAX(ingredients_date) FROM ingredients GROUP BY ingredient_id)";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int ID = rs.getInt("ingredient_id");
-                    int providerID = rs.getInt("provider_id");
-                    String date = rs.getString("ingredients_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    int amount = rs.getInt("amount");
-                    boolean in_inventory = rs.getBoolean("in_inventory");
-                    boolean active = rs.getBoolean("active");
-                    tempList.add(new ingredient(ID, providerID, date, name, price, amount, in_inventory, active));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<allergen> getNonSelectedAllergens(ingredient theIngredient) {
-        ArrayList<allergen> tempList = new ArrayList<allergen>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT allergen_id, name FROM allergens WHERE allergen_id NOT IN (SELECT allergen_id FROM ingredients_allergens WHERE ingredient_id = "
-                    + theIngredient.getId() + ")";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int allergenID = rs.getInt("allergen_id");
-                    String name = rs.getString("name");
-                    tempList.add(new allergen(allergenID, name));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<ingredient> getNonSelectedIngredients(product theProduct) {
-        ArrayList<ingredient> tempList = new ArrayList<ingredient>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients WHERE ingredient_id NOT IN (SELECT DISTINCT ingredient_id FROM ingredients NATURAL JOIN products_ingredients WHERE product_id ="
-                    + theProduct.getId()
-                    + ") AND (ingredient_id, ingredients_date) IN (SELECT ingredient_id, MAX(ingredients_date) FROM ingredients GROUP BY ingredient_id)";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int ID = rs.getInt("ingredient_id");
-                    int providerID = rs.getInt("provider_id");
-                    String date = rs.getString("ingredients_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    int amount = rs.getInt("amount");
-                    boolean in_inventory = rs.getBoolean("in_inventory");
-                    boolean active = rs.getBoolean("active");
-                    tempList.add(new ingredient(ID, providerID, date, name, price, amount, in_inventory, active));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean editAllergen(int ID, String name) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE allergens SET name = '" + name + "' WHERE allergen_id = " + Integer.toString(ID);
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<ingredient> getAllIngredients() {
-        ArrayList<ingredient> tempList = new ArrayList<ingredient>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int ID = rs.getInt("ingredient_id");
-                    int providerID = rs.getInt("provider_id");
-                    String date = rs.getString("ingredients_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    int amount = rs.getInt("amount");
-                    boolean in_inventory = rs.getBoolean("in_inventory");
-                    boolean active = rs.getBoolean("active");
-                    tempList.add(new ingredient(ID, providerID, date, name, price, amount, in_inventory, active));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<ingredient> getAllCurrentIngredients() {
-        ArrayList<ingredient> tempList = getNonRepeatedIngredients();
-        tempList = getCorrectRepeatedIngredient(tempList);
-        return tempList;
-    }
-
-    private ArrayList<ingredient> getNonRepeatedIngredients() {
-        ArrayList<ingredient> tempList = new ArrayList<ingredient>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients WHERE ingredient_id NOT IN (SELECT ingredient_id FROM ingredients GROUP BY ingredient_id HAVING count(*) > 1);";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int ID = rs.getInt("ingredient_id");
-                    int providerID = rs.getInt("provider_id");
-                    String date = rs.getString("ingredients_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    int amount = rs.getInt("amount");
-                    boolean in_inventory = rs.getBoolean("in_inventory");
-                    boolean active = rs.getBoolean("active");
-                    tempList.add(new ingredient(ID, providerID, date, name, price, amount, in_inventory, active));
-                }
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private ArrayList<ingredient> getCorrectRepeatedIngredient(ArrayList<ingredient> theList) {
-        ArrayList<ingredient> tempList = new ArrayList<ingredient>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients WHERE ingredient_id IN (SELECT ingredient_id FROM ingredients GROUP BY ingredient_id HAVING count(*) > 1);";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int ID = rs.getInt("ingredient_id");
-                    int providerID = rs.getInt("provider_id");
-                    String date = rs.getString("ingredients_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    int amount = rs.getInt("amount");
-                    boolean in_inventory = rs.getBoolean("in_inventory");
-                    boolean active = rs.getBoolean("active");
-                    tempList.add(new ingredient(ID, providerID, date, name, price, amount, in_inventory, active));
-                }
-                checkLatestIngredients(tempList);
-                theList.addAll(tempList);
-                connection.close();
-                return theList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return theList;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<product> getAllCurrentProducts() {
-        ArrayList<product> tempList = new ArrayList<product>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM products ORDER BY product_id";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int ID = rs.getInt("product_id");
-                    String date = rs.getString("product_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    boolean active = rs.getBoolean("active");
-                    tempList.add(new product(ID, date, name, price, active));
-                }
-                tempList = checkRepeatedProducts(tempList);
-                connection.close();
-                return tempList;
-            } catch (Exception e) {
-                System.out.println(e);
-                return tempList;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private ArrayList<product> checkRepeatedProducts(ArrayList<product> theList) {
-        int goal = theList.size();
-        for (int i = 0; i < goal - 1; i++) {
-            if (theList.get(i).getId() == theList.get(i + 1).getId()) {
-                LocalDate date1 = LocalDate.parse(theList.get(i).getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                LocalDate date2 = LocalDate.parse(theList.get(i + 1).getDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                if (date1.isBefore(date2)) {
-                    theList.remove(i);
-                    goal--;
-                    i--;
-                } else {
-                    theList.remove(i + 1);
-                    goal--;
-                    i--;
-                }
-            }
-        }
-        return theList;
-    }
-
-    private ArrayList<ingredient> checkLatestIngredients(ArrayList<ingredient> theList) {
-        int goal = theList.size();
-        for (int i = 0; i < goal - 1; i++) {
-            if (theList.get(i) == theList.get(i + 1)) {
-                LocalDate date1 = LocalDate.parse(theList.get(i).getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                LocalDate date2 = LocalDate.parse(theList.get(i + 1).getDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                if (date1.isBefore(date2)) {
-                    theList.remove(i);
-                    goal--;
-                    i--;
-                } else {
-                    theList.remove(i + 1);
-                    goal--;
-                    i--;
-                }
-            }
-        }
-        return theList;
-    }
-
-    public boolean addAlergensOfIngredient(Stack<allergen> stackSelected, int ingredientID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            while (!stackSelected.isEmpty()) {
-                allergen temp = stackSelected.pop();
-                String query = "INSERT INTO ingredients_allergens VALUES (" + ingredientID + ", '" + temp.getId()
-                        + "');";
-                try (Statement stmt = connection.createStatement()) {
-                    stmt.executeUpdate(query);
-                } catch (Exception a) {
-                    System.out.println(a);
-                    return false;
-                }
-            }
-            return true;
-        } catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-    }
-
-    public boolean updateAlergensOfIngredient(Stack<allergen> stackSelected, int ingredientID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "DELETE FROM ingredients_allergens WHERE ingredient_id = " + ingredientID;
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-            } catch (Exception a) {
-                System.out.println(a);
-                return false;
-            }
-            return addAlergensOfIngredient(stackSelected, ingredientID);
-        } catch (SQLException e) {
-            System.out.println(e);
-            return false;
-        }
-    }
-
-    public boolean removeAllergen(String ID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "DELETE FROM ingredients_allergens WHERE allergen_id = " + ID + ";";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-            } catch (Exception e) {
-                return false;
-            }
-            query = "DELETE FROM allergens WHERE allergen_id = " + ID + ";";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public ingredient getIngredient(int ID, int prov_id, String date) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients WHERE ingredient_id = " + ID + " AND provider_id  = " + prov_id
-                    + " AND ingredients_date = '" + date + "';";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    int amount = rs.getInt("amount");
-                    boolean in_inventory = rs.getBoolean("in_inventory");
-                    boolean active = rs.getBoolean("active");
-                    connection.close();
-                    return new ingredient(ID, prov_id, date, name, price, amount, in_inventory, active);
-                } else {
-                    connection.close();
-                    return null;
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public product getProduct(int productID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM beatneat.producst WHERE product_id = " + productID
-                    + " ORDER BY product_date DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                ArrayList<product> temp = new ArrayList<product>();
-                if (rs.next()) {
-                    int ID = rs.getInt("product_id");
-                    String date = rs.getString("product_date");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    boolean active = rs.getBoolean("active");
-                    return new product(ID, date, name, price, active);
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-        return null;
-    }
-
-    public String getIngredientName(String ID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM ingredients WHERE ingredient_id = " + ID;
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String name = rs.getString("name");
-                    connection.close();
-                    return name;
-                } else {
-                    connection.close();
-                    return "";
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public ArrayList<String> getAllergensOfIngredient(String ID) {
-        Stack<Integer> allergenIDs = new Stack<Integer>();
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT allergen_id FROM ingredients_allergens WHERE ingredient_id = " + ID;
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next())
-                    allergenIDs.add(rs.getInt("allergen_id"));
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-            ArrayList<String> containingAllergenNames = new ArrayList<String>();
-            while (!allergenIDs.isEmpty()) {
-                query = "SELECT name FROM allergens WHERE allergen_id = " + allergenIDs.pop();
-                try (Statement stmt = connection.createStatement()) {
-                    ResultSet rs = stmt.executeQuery(query);
-                    if (rs.next())
-                        containingAllergenNames.add(rs.getString("name"));
-                } catch (Exception e) {
-                    System.out.println(e);
-                    return null;
-                }
-            }
-            return containingAllergenNames;
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean ingredientSimpleEdit(ingredient theIngredient, String newName, boolean newInventory,
-            boolean newActive) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE ingredients SET name = '" + newName + "', in_inventory = " + newInventory
-                    + ", active = " + newActive + " WHERE ingredient_id = " + theIngredient.getId()
-                    + " AND provider_id = "
-                    + theIngredient.getProviderID() + " AND ingredients_date ='" + theIngredient.getDate() + "'";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean ingredientComplexIngredientEdit(ingredient theIngredient, int prov_id, int amount, float price) {
-        if (theIngredient.getProviderID() == prov_id && theIngredient.getAmount() == amount
-                && theIngredient.getPrice() == price)
-            return false;
-        LocalDate dateObj = LocalDate.now();
-        String date = dateObj.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        if (theIngredient.getDate().equals(date)) {
-            return updateComplexIngredient(theIngredient, prov_id, amount, price);
-        }
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "INSERT INTO ingredients VALUES (" + theIngredient.getId() + ", " + prov_id + ", '"
-                    + date
-                    + "', '" + theIngredient.getName()
-                    + "', " + price + ", " + amount + ", " + theIngredient.getInInventory() + ", "
-                    + theIngredient.getActive() + ");";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean updateComplexIngredient(ingredient theIngredient, int prov_id, int amount, float price) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE ingredients SET provider_id = " + prov_id
-                    + ", amount = " + amount + ", price = " + price
-                    + " WHERE ingredient_id = " + theIngredient.getId() + " AND provider_id = "
-                    + theIngredient.getProviderID() + " AND ingredients_date = '" + theIngredient.getDate() + "';";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean easyUpdateProduct(int productID, String name, boolean active) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE products SET name = '" + name + "', active = " + active
-                    + " WHERE product_id = " + productID;
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean mediumUpdateProduct(product theProduct, float price) {
-        LocalDate dateObj = LocalDate.now();
-        String date = dateObj.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        if (theProduct.getDate().equals(date)) {
-            return updateProductPriceToday(theProduct.getId(), price);
-        }
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "INSERT INTO products VALUES (" + theProduct.getId() + ", '" + date + "', '"
-                    + theProduct.getName() + "', " + price + ", " + theProduct.getActive() + ");";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean isProductIngredientDateToday(int product_id) {
-        try (Connection connection = DriverManager.getConnection(url, user,
-                password)) {
-            String dateToday = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String query = "SELECT MAX(products_ingredients_date) FROM products_ingredients WHERE product_id = "
-                    + product_id + ";";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String dateDB = rs.getString("MAX(products_ingredients_date)");
-                    connection.close();
-                    if (dateToday.equals(dateDB))
-                        return true;
-                    else
-                        return false;
-                } else {
-                    connection.close();
-                    return false;
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public int getAmountOfIngredientInProduct(int productID, int ingredient_id) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT ingredientQuantity FROM products_ingredients WHERE product_id = " + productID
-                    + " AND ingredient_id = " + ingredient_id + " ORDER BY products_ingredients_date DESC LIMIT 1";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    int name = rs.getInt("ingredientQuantity");
-                    connection.close();
-                    return name;
-                } else {
-                    connection.close();
-                    return -1;
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return -1;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean removeProductIngredientsToday(int productID) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String dateToday = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String query = "DELETE FROM products_ingredients WHERE product_id = " + productID
-                    + " AND products_ingredients_date = '" + dateToday + "';";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean isProductDateToday(int product_id) {
-        try (Connection connection = DriverManager.getConnection(url, user,
-                password)) {
-            String dateToday = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String query = "SELECT MAX(product_date) FROM product WHERE product_id = " + product_id + ";";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String dateDB = rs.getString("MAX(product_date)");
-                    connection.close();
-                    if (dateToday.equals(dateDB))
-                        return true;
-                    else
-                        return false;
-                } else {
-                    connection.close();
-                    return false;
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean updateProductPriceToday(int productID, float productPrice) {
-        try (Connection connection = DriverManager.getConnection(url, user,
-                password)) {
-            String dateToday = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String query = "UPDATE products SET price = " + productPrice + " WHERE product_date = '" + dateToday
-                    + "' AND product_id = " + productID;
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
 
     public int getAmountOfTables() {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
@@ -1060,13 +86,16 @@ public class managerDB {
     public ArrayList<orderItems> getOrderItems(int order_id) {
         ArrayList<orderItems> tempList = new ArrayList<orderItems>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT products.name, orders_items.quantity FROM products INNER JOIN orders_items ON products.product_id = orders_items.product_id WHERE orders_items.order_id = " + order_id + ";";
+            String query = "SELECT products.product_id, products.name, products.price, products.active, orders_items.quantity FROM products INNER JOIN orders_items ON products.product_id = orders_items.product_id WHERE orders_items.order_id = " + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    String product = rs.getString("products.name");
+                    int product_id = rs.getInt("products.product_id");
+                    String name = rs.getString("products.name");
+                    float price = rs.getFloat("products.price");
+                    Boolean active = rs.getBoolean("products.active");
                     int quantity = rs.getInt("orders_items.quantity");
-                    tempList.add(new orderItems(order_id, product, quantity));
+                    tempList.add(new orderItems(order_id, (new product(product_id, name, price, active)), quantity));
                 } 
                 connection.close();
                 return tempList;
@@ -1102,7 +131,7 @@ public class managerDB {
     public ArrayList<Integer> getOrders() {
         ArrayList<Integer> tempList = new ArrayList<Integer>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT order_id FROM orders_summary;";
+            String query = "SELECT order_id FROM orders_summary WHERE time_out IS NULL;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -1161,103 +190,6 @@ public class managerDB {
         }
     }
 
-    private String getStartShift(int employee_id) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT start_shift FROM employees WHERE employee_id =  "+ employee_id +";";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String start_shift = rs.getString("start_shift");
-                    connection.close();
-                    return start_shift;
-                }
-                return null;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private String getEndShift(int employee_id) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT end_shift FROM employees WHERE employee_id =  "+ employee_id +";";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String end_shift = rs.getString("end_shift");
-                    connection.close();
-                    return end_shift;
-                }
-                return null;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private String getLastCheckIn(int employee_id) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT start_shift FROM employees_schedule WHERE employee_id =  "+ employee_id +" ORDER BY shift_date, start_shift DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String start_shift = rs.getString("start_shift");
-                    connection.close();
-                    return start_shift;
-                }
-                return null;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    private String getLastCheckOut(int employee_id) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT end_shift FROM employees_schedule WHERE employee_id =  "+ employee_id +" ORDER BY shift_date, start_shift DESC LIMIT 1;";
-            try (Statement stmt = connection.createStatement()) {
-                ResultSet rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    String end_shift = rs.getString("end_shift");
-                    connection.close();
-                    return end_shift;
-                }
-                return null;
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
-    public boolean checkIn(int employee_id) {
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "INSERT INTO employees_schedule VALUES (" + employee_id + ", '" + java.time.LocalDate.now() + "', '" + 
-                getStartShift(employee_id) + "', '" + getEndShift(employee_id) + "', '" + java.time.LocalTime.now() + "', NULL, NULL);";
-            try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(query);
-                connection.close();
-                return true;
-            } catch (Exception e) {
-                System.out.println(e);
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-
     public ArrayList<category> getAllCategories() {
         ArrayList<category> tempList = new ArrayList<category>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
@@ -1267,7 +199,9 @@ public class managerDB {
                 while (rs.next()) {
                     int categoryID = rs.getInt("category_id");
                     String name = rs.getString("category_name");
-                    tempList.add(new category(categoryID, name));
+                    if (getProductsByCategory(categoryID).size() != 0) {
+                        tempList.add(new category(categoryID, name));
+                    }
                 }
                 connection.close();
                 return tempList;
@@ -1280,20 +214,310 @@ public class managerDB {
         }
     }
 
-    // public boolean checkOut(int employee_id) {
-    //     try (Connection connection = DriverManager.getConnection(url, user, password)) {
-    //         String query = "UPDATE employees_schedule SET real_out = '" + java.time.LocalTime.now() + "' WHERE start_shift = '" + getLastCheckIn(employee_id) + 
-    //             "' AND shift_date = '" + java.time.LocalDate.now() + "';";
-    //         try (Statement stmt = connection.createStatement()) {
-    //             stmt.executeUpdate(query);
-    //             connection.close();
-    //             return true;
-    //         } catch (Exception e) {
-    //             System.out.println(e);
-    //             return false;
-    //         }
-    //     } catch (SQLException e) {
-    //         throw new IllegalStateException("Cannot connect the database!", e);
-    //     }
-    // }
+    public ArrayList<product> getProductsByCategory(int category_id) {
+        ArrayList<product> tempList = new ArrayList<product>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT products.product_id, products.name, products.price, products.active FROM products " + 
+            "INNER JOIN products_categories ON products.product_id = products_categories.product_id " +
+            "INNER JOIN categories ON products_categories.category_id = categories.category_id " + 
+            "WHERE categories.category_id = " + category_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int product_id = rs.getInt("products.product_id");
+                    String name = rs.getString("products.name");
+                    float price = rs.getFloat("products.price");
+                    Boolean active = rs.getBoolean("products.active");
+                    tempList.add(new product(product_id, name, price, active));
+                }
+                // System.out.println(tempList);
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public boolean newOrder(int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT order_id FROM orders_summary WHERE order_id =  " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    connection.close();
+                    return false;
+                }
+                return true;
+            } catch (Exception e) {
+                System.out.println(e);
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void addNewOrder(int order_id, int product_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "INSERT INTO orders_summary VALUES (" + order_id + ", '" + java.time.LocalTime.now() + 
+                "', NULL, NULL, NULL, NULL, '" + java.time.LocalDate.now() + "', NULL);";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+    
+    public void addOrderItem(int order_id, int product_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "INSERT INTO orders_items VALUES (" + order_id + ", " + product_id + ", 1);";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public int getTableID(int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT table_id FROM tables WHERE order_id =  " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    int table_id = rs.getInt("table_id");
+                    connection.close();
+                    return table_id;
+                }
+                return -1;
+            } catch (Exception e) {
+                System.out.println(e);
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void makeTableOccupied(int order_id, int table_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE tables SET order_id = " + order_id +", is_empty = 0 WHERE table_id = " + table_id +";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void makeTableEmpty(int table_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE tables SET order_id = NULL, is_empty = 1 WHERE table_id = " + table_id +";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public boolean checkProductInOrder (int product_id, int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT product_id FROM orders_items WHERE product_id =  " + product_id + " AND order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    connection.close();
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                System.out.println(e);
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void updateProductQuantity(int order_id, int product_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE orders_items SET quantity = (1+" + getProductQuantity(order_id, product_id) + ") WHERE order_id = " + 
+                order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+    
+    public void setProductQuantity(int order_id, int product_id, int quantity) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE orders_items SET quantity = " + quantity + " WHERE order_id = " + 
+                order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private int getProductQuantity(int order_id, int product_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT quantity FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    int quantity = rs.getInt("quantity");
+                    connection.close();
+                    return quantity;
+                }
+                return -1;
+            } catch (Exception e) {
+                System.out.println(e);
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void checkOutOrder(int order_id, float total, float tax, float subtotal, Boolean cash) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE orders_summary SET time_out = '" + java.time.LocalTime.now() + "', total = " + total + 
+                ", tax = " + tax + ", subtotal = " + subtotal + ", cash = " + cash + 
+                " WHERE order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void checkIn(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE employees_schedule SET realtime_in = '" + java.time.LocalTime.now() +
+                "' WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void checkOut(int employee_id, String realtime_out, Boolean undertime) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE employees_schedule SET realtime_out = '" + realtime_out + "', undertime = " + undertime + 
+            " WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public employee_schedule getEmployee_schedules(int employee_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT * FROM employees_schedule;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    employee_id = rs.getInt("employee_id");
+                    String date = rs.getString("shift_date");
+                    String start_shift = rs.getString("start_shift");
+                    String end_shift = rs.getString("end_shift");
+                    String realtime_in = rs.getString("realtime_in");
+                    String realtime_out = rs.getString("realtime_out");
+                    Boolean undertime = rs.getBoolean("undertime");
+                    connection.close();
+                    return new employee_schedule(employee_id, date, start_shift, end_shift, realtime_in, realtime_out, undertime);
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void deleteAllOrderItems(int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "DELETE FROM orders_items WHERE order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void deleteOrderSummary(int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "DELETE FROM orders_summary WHERE order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void deleteOrderItem(int order_id, int product_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "DELETE FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
 }

@@ -1,6 +1,8 @@
 package windows.checksWindow;
 
 import java.awt.event.ActionListener;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import javax.swing.JButton;
@@ -8,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import iLayouts.FlowLayoutApplyer;
+import objects.employee_schedule;
 import util.abstractUpdater;
 import util.numberInput;
 
@@ -53,16 +56,28 @@ public class check_cWindow extends abstractUpdater {
             public void actionPerformed(ActionEvent e) {
                 int check = theManagerDB.checkEmployeeID(Integer.parseInt(textField.getText()));
                 if ((check == 1) && (name == "Check in")) {
-                    // theManagerDB.checkIn(Integer.parseInt(textField.getText()));
-                    // theFrame.add(new JLabel("Check in successfully"));
-                    // theFrame.validate();
-                    // theFrame.repaint();
+                    theManagerDB.checkIn(Integer.parseInt(textField.getText()));
+                    theFrame.add(new JLabel("Check in successfully"));
+                    theFrame.validate();
+                    theFrame.repaint();
                 }
                 if ((check == 1) && (name == "Check out")) {
-                    // theManagerDB.checkOut(Integer.parseInt(textField.getText()));
-                    // theFrame.add(new JLabel("Check in successfully"));
-                    // theFrame.validate();
-                    // theFrame.repaint();
+                    employee_schedule schedule = theManagerDB.getEmployee_schedules(Integer.parseInt(textField.getText()));
+                    LocalTime start_shift = LocalTime.parse(schedule.getStart_shift());
+                    LocalTime end_shift = LocalTime.parse(schedule.getEnd_shift());
+                    LocalTime realtime_in = LocalTime.parse(schedule.getRealtime_in());
+                    LocalTime realtime_out = java.time.LocalTime.now();
+                    
+                    int shiftDuration = (int) ChronoUnit.MINUTES.between(start_shift, end_shift);
+                    int realShift = (int) ChronoUnit.MINUTES.between(realtime_in, realtime_out);                    
+
+                    if (realShift < shiftDuration) schedule.setUndertime(true);
+                    else if (realShift >= shiftDuration) schedule.setUndertime(false);
+
+                    theManagerDB.checkOut(Integer.parseInt(textField.getText()), realtime_out.toString(), schedule.getUndertime());
+                    theFrame.add(new JLabel("Check out successfully"));
+                    theFrame.validate();
+                    theFrame.repaint();
                 }
             }
         });

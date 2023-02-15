@@ -1,16 +1,16 @@
-package componentsFood;
+package objects;
 
-public class allergen {
+public class category {
 
     private final int id;
     private String name;
 
-    public allergen(int id, String name) {
+    public category(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 

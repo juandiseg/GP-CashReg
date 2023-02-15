@@ -15,10 +15,11 @@ public class assist_add_oWindow extends abstractUpdater {
     private ArrayList<JButton> buttons = new ArrayList<>();
     private JButton toGoButton = new JButton("To go");
     private JButton backButton = new JButton("Back");
-    private static ArrayList<Integer> freeTables = theManagerDB.getFreeTables();
+    private ArrayList<Integer> freeTables = new ArrayList<>();
 
     public assist_add_oWindow(abstractUpdater previousWindow) {
-        super(previousWindow, new GridLayoutApplyer(theFrame, freeTables.size()+2));
+        super(previousWindow, new GridLayoutApplyer(theFrame, theManagerDB.getFreeTables().size()+2));
+        freeTables = theManagerDB.getFreeTables();
     }
 
     @Override
@@ -37,16 +38,25 @@ public class assist_add_oWindow extends abstractUpdater {
     @Override
     public void addActionListeners() {
         abstractUpdater temp = this;
+        int order_id = theManagerDB.getLastOrderID() + 1;
         
         for (int i=0; i < freeTables.size(); i++) {
-            int order_id = theManagerDB.getLastOrderID() + 1;
+            int table_id  = freeTables.get(i);
             buttons.get(i).addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    add_oWindow tempWind = new add_oWindow(temp, order_id);
+                    add_oWindow tempWind = new add_oWindow(temp, order_id, table_id, true);
+                    buttons.removeAll(buttons);
                     tempWind.updateToThisMenu();
                 }
             });
         }
+
+        toGoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                add_oWindow tempWind = new add_oWindow(temp, order_id, -1, true);
+                tempWind.updateToThisMenu();
+            }
+        });
 
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

@@ -10,14 +10,15 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 
-public class assist_edit_oWindow extends abstractUpdater {
+public class assist_check_oWindow extends abstractUpdater {
 
     private ArrayList<JButton> buttons = new ArrayList<>();
     private JButton backButton = new JButton("Back");
-    private static ArrayList<Integer> orders = theManagerDB.getOrders();
+    private ArrayList<Integer> orders = new ArrayList<>();
 
-    public assist_edit_oWindow(abstractUpdater previousWindow) {
-        super(previousWindow, new GridLayoutApplyer(theFrame, orders.size()+1));
+    public assist_check_oWindow(abstractUpdater previousWindow) {
+        super(previousWindow, new GridLayoutApplyer(theFrame, theManagerDB.getOrders().size()+1));
+        orders = theManagerDB.getOrders();
     }
 
     @Override
@@ -37,10 +38,10 @@ public class assist_edit_oWindow extends abstractUpdater {
         abstractUpdater temp = this;
         
         for (int i=0; i < orders.size(); i++) {
-            int table_id = orders.get(i);
+            int order_id = orders.get(i);
             buttons.get(i).addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    edit_oWindow tempWind = new edit_oWindow(temp, table_id);
+                    check_oWindow tempWind = new check_oWindow(temp, order_id);
                     tempWind.updateToThisMenu();
                 }
             });

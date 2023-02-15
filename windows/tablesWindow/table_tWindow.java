@@ -5,11 +5,8 @@ import java.awt.event.ActionEvent;
 
 import iLayouts.FlowLayoutApplyer;
 import windows.main_Window;
-import windows.ordersWindow.assist_edit_oWindow;
-import windows.ordersWindow.edit_oWindow;
 import util.abstractUpdater;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -47,16 +44,16 @@ public class table_tWindow extends abstractUpdater {
     public void addActionListeners() {
         abstractUpdater temp = this;
 
-        backButton.addActionListener(new ActionListener() {
+        viewOrder.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new main_tWindow(new main_Window()).updateToThisMenu();
+                viewOrder_tWindow tempWind = new viewOrder_tWindow(temp, theManagerDB.getOrderID(table_id), table_id);
+                tempWind.updateToThisMenu();
             }
         });
 
-        viewOrder.addActionListener(new ActionListener() {
+        backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                viewOrder_tWindow tempWind = new viewOrder_tWindow(temp, theManagerDB.getOrderID(table_id));
-                tempWind.updateToThisMenu();
+                new main_tWindow(new main_Window()).updateToThisMenu();
             }
         });
     }

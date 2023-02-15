@@ -34,7 +34,7 @@ public class main_tWindow extends abstractUpdater {
     public void addActionListeners() {
         abstractUpdater temp = this;
 
-        for (int i=0; i < numberTables; i++) {
+        for(int i=0; i < numberTables; i++) {
             int table_id = i+1;
             buttons.get(i).addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {

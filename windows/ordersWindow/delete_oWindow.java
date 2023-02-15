@@ -1,84 +1,67 @@
 package windows.ordersWindow;
 
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import java.awt.event.*;
-import componentsFood.allergen;
-import componentsFood.provider;
-import util.abstractEdit_CheckWindow;
+import iLayouts.GridLayoutApplyer;
 import util.abstractUpdater;
+import windows.main_Window;
 
-public class delete_oWindow extends abstractEdit_CheckWindow {
+import java.awt.event.ActionEvent;
 
-    private JLabel instruction = new JLabel("Double-click on Provider to be deleted");
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
+public class delete_oWindow extends abstractUpdater {
+
+    private ArrayList<JButton> buttons = new ArrayList<>();
+    private JButton backButton = new JButton("Back");
+    private ArrayList<Integer> orders = new ArrayList<>();
 
     public delete_oWindow(abstractUpdater previousWindow) {
-        super(previousWindow, "Choose Provider to be deleted", "Provider");
-        // TODO Auto-generated constructor stub
+        super(previousWindow, new GridLayoutApplyer(theFrame, theManagerDB.getOrders().size()+1));
+        orders = theManagerDB.getOrders();
     }
 
     @Override
-    public void addRowsToModel() {
-        myTable = new JTable();
-        model = new DefaultTableModel(new String[] { "ID", "Name", "Email" }, 0);
-        ArrayList<provider> providerList = theManagerDB.getAllProviders();
-        for (provider temp : providerList)
-            model.addRow(new String[] { Integer.toString(temp.getId()), temp.getName(), temp.getEmail() });
-    }
-
-    @Override
-    public void adjustTable() {
-        setScrollPane(new JScrollPane(myTable));
-        getScrollPane().setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        myTable.setModel(model);
-        myTable.removeColumn(myTable.getColumn("ID"));
-        myTable.setDefaultEditor(Object.class, null);
-        myTable.setFocusable(true);
-    }
-
-    @Override
-    public void setBounds() {
-        getSummaryTXT().setBounds(200, 20, 250, 25);
-        getBackButton().setBounds(400, 400, 120, 80);
-        getScrollPane().setBounds(45, 60, 500, 300);
-        instruction.setBounds(200, 370, 250, 25);
-    }
-
-    @Override
-    public void addToFrame() {
-        theFrame.add(getBackButton());
-        theFrame.add(getSummaryTXT());
-        theFrame.add(getScrollPane());
-        theFrame.add(instruction);
+    public void addComponents() {
+        theFrame.setTitle("Pick Order");
+        // Adds a button for every table
+        for (int i = 0; i < orders.size(); i++) {
+            JButton button = new JButton("Order " + (orders.get(i)));
+            theFrame.add(button);
+            buttons.add(button);
+        }
+        theFrame.add(backButton);
     }
 
     @Override
     public void addActionListeners() {
-        myTable.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                if (me.getClickCount() == 1) { // to detect doble click events
-                    try {
-                        if (myTable.getValueAt(myTable.getSelectedRow(), 0).toString().equals(""))
-                            return;
-                        int row = myTable.getSelectedRow();
-                        String ID = (String) model.getValueAt(row, 0);
-                        int reply = JOptionPane.showConfirmDialog(null,
-                                "Are you sure you want to DELETE this PROVIDER?",
-                                "Confirmation", JOptionPane.YES_NO_OPTION);
-                        if (reply == JOptionPane.YES_OPTION) {
-                            // HAVE TO IMPLEMENT
-                        }
-                    } catch (IndexOutOfBoundsException e) {
-                        return;
+        
+        for (int i=0; i < orders.size(); i++) {
+            int order_id = orders.get(i);
+            int table_id = theManagerDB.getTableID(order_id);
+
+            buttons.get(i).addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Object[] options = {"Yes", "No"};
+                    int n = JOptionPane.showOptionDialog(theFrame, "Are you sure you want to delete order " + order_id + "?", null,
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+
+                    if (n==0) {
+                        if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
+                        theManagerDB.deleteAllOrderItems(order_id);
+                        theManagerDB.deleteOrderSummary(order_id);
+                        new main_Window();
                     }
                 }
+            });
+        }
+
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateToPreviousMenu();
             }
         });
     }
-
 }

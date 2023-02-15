@@ -70,7 +70,7 @@ public class numberInput extends JFrame implements ActionListener {
 		}
 		display.setText(textThere.concat(additionalText));
 	}
-	
+
 	public JPanel setInput() {
 		
 		//create and set up the window.

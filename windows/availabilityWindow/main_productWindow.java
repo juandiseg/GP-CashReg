@@ -34,14 +34,14 @@ public class main_productWindow extends abstractUpdater {
         abstractUpdater temp = this;
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                add_productWindow tempWind = new add_productWindow(temp);
-                tempWind.updateToThisMenu();
+                // add_productWindow tempWind = new add_productWindow(temp);
+                // tempWind.updateToThisMenu();
             }
         });
         button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                edit_productWindow tempWind = new edit_productWindow(temp);
-                tempWind.updateToThisMenu();
+                // edit_productWindow tempWind = new edit_productWindow(temp);
+                // tempWind.updateToThisMenu();
             }
         });
         button3.addActionListener(new ActionListener() {

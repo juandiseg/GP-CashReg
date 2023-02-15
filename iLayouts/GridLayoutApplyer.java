@@ -14,7 +14,7 @@ public class GridLayoutApplyer implements iLayout {
     }
 
     public void applyLayout() {
-        if(((numberOfButtons / 2) % 1 == 0) && (numberOfButtons < 9))
+        if(((numberOfButtons / 2) % 1 == 0) && (numberOfButtons < 8))
             theFrame.setLayout(new GridLayout(numberOfButtons / 2, numberOfButtons / 2));
         else if((numberOfButtons / 3) % 1 == 0)
             theFrame.setLayout(new GridLayout(numberOfButtons / 3, numberOfButtons / 3));

@@ -1,6 +1,5 @@
 package windows;
 
-import windows.availabilityWindow.main_productWindow;
 import windows.checksWindow.main_cWindow;
 import windows.ordersWindow.*;
 import windows.tablesWindow.*;
@@ -29,6 +28,7 @@ public class main_Window extends abstractUpdater {
         theFrame.setSize(1000, 650);
         theFrame.setVisible(true);
         theFrame.setLocationRelativeTo(null);
+        theFrame.setResizable(false);
         updateToThisMenu();
     }
 
