@@ -1,12 +1,12 @@
 package objects;
 
-public class Product {
+public class Menu {
     private final int id;
     private String name;
     private float price;
     private boolean active;
 
-    public Product(int id, String name, float price, boolean active) {
+    public Menu(int id, String name, float price, boolean active) {
         this.id = id;
         this.name = name;
         this.price = price;

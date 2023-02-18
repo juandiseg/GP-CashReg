@@ -1,14 +1,14 @@
 package objects;
 
-public class OrderItems {
+public class OrderMenus {
     
     private final int id;
-    private Product product;
+    private Menu menu;
     private int quantity;
 
-    public OrderItems(int id, Product product, int quantity) {
+    public OrderMenus(int id, Menu menu, int quantity) {
         this.id = id;
-        this.product = product;
+        this.menu = menu;
         this.quantity = quantity;
     }
 
@@ -16,8 +16,8 @@ public class OrderItems {
         return id;
     }
 
-    public Product getProduct() {
-        return product;
+    public Menu getMenu() {
+        return menu;
     }
 
     public int getQuantity() {
@@ -25,7 +25,7 @@ public class OrderItems {
     }
 
     public String getName() {
-        return product.getName();
+        return menu.getName();
     }
 
     public void setQuantity(int quantity) {

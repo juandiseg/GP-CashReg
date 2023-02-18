@@ -3,14 +3,14 @@ package util;
 import javax.swing.JPanel;
 import iLayouts.iLayout;
 
-public abstract class abstractPanel {
+public abstract class AbstractPanel {
 
     public static JPanel thePanel;
-    public static managerDB theManagerDB;
-    private abstractPanel previousPanel;
+    public static ManagerDB theManagerDB;
+    private AbstractPanel previousPanel;
     private iLayout layoutApplyer;
 
-    public abstractPanel(abstractPanel previousPanel, iLayout layoutApplyer) {
+    public AbstractPanel(AbstractPanel previousPanel, iLayout layoutApplyer) {
         this.previousPanel = previousPanel;
         this.layoutApplyer = layoutApplyer;
     }
@@ -19,7 +19,7 @@ public abstract class abstractPanel {
         thePanel = _thePanel;
     }
 
-    final public void setManagerDB(managerDB _theManagerDB) {
+    final public void setManagerDB(ManagerDB _theManagerDB) {
         theManagerDB = _theManagerDB;
     }
 
@@ -50,7 +50,7 @@ public abstract class abstractPanel {
 
     public abstract void addActionListeners();
 
-    public abstractPanel getPreviousPanel() {
+    public AbstractPanel getPreviousPanel() {
         return previousPanel;
     }
 }

@@ -1,12 +1,13 @@
 package windows.tablesWindow;
 
 import iLayouts.FlowLayoutApplyer;
-import objects.orderItems;
-import util.abstractTable;
-import util.abstractUpdater;
-import windows.main_Window;
-import windows.ordersWindow.add_oWindow;
-import windows.ordersWindow.check_oWindow;
+import objects.OrderItems;
+import objects.OrderMenus;
+import util.AbstractTable;
+import util.AbstractUpdater;
+import windows.MainWindow;
+import windows.ordersWindow.AddOWindow;
+import windows.ordersWindow.CheckOWindow;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 
-public class viewOrder_tWindow extends abstractUpdater {
+public class ViewOrderWindow extends AbstractUpdater {
 
     private int order_id;
     private int table_id;
@@ -28,7 +29,7 @@ public class viewOrder_tWindow extends abstractUpdater {
     private JButton button3 = new JButton("Check-out Order");
     private JButton backButton = new JButton("Back");
     
-    public viewOrder_tWindow(abstractUpdater previousWindow, int order_id, int table_id) {
+    public ViewOrderWindow(AbstractUpdater previousWindow, int order_id, int table_id) {
         super(previousWindow, new FlowLayoutApplyer(theFrame));
         this.order_id = order_id;
         this.table_id = table_id;
@@ -36,12 +37,13 @@ public class viewOrder_tWindow extends abstractUpdater {
 
     @Override
     public void addComponents() {
-        ArrayList<orderItems> order = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
         JPanel panel = new JPanel();
         JLabel label = new JLabel("Order ID: " + order_id);
         panel.setLayout(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
-        new abstractTable(panel, order_id, order);
+        new AbstractTable(panel, order_id, orderItems, orderMenus);
         theFrame.add(panel);
 
         JPanel panel2 = new JPanel();
@@ -56,11 +58,11 @@ public class viewOrder_tWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                add_oWindow tempWind = new add_oWindow(temp, order_id, table_id, false);
+                AddOWindow tempWind = new AddOWindow(temp, order_id, table_id, false);
                 tempWind.updateToThisMenu();
             }
         });
@@ -75,14 +77,14 @@ public class viewOrder_tWindow extends abstractUpdater {
                     theManagerDB.makeTableEmpty(table_id);
                     theManagerDB.deleteAllOrderItems(order_id);
                     theManagerDB.deleteOrderSummary(order_id);
-                    new main_Window();
+                    new MainWindow();
                 }
             }
         });
 
         button3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                check_oWindow tempWind = new check_oWindow(temp, order_id);
+                CheckOWindow tempWind = new CheckOWindow(temp, order_id);
                 tempWind.updateToThisMenu();
             }
         });

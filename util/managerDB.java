@@ -12,7 +12,7 @@ import objects.*;
 
 import java.sql.ResultSet;
 
-public class managerDB {
+public class ManagerDB {
 
     private final static String url = "jdbc:mysql://localhost:3306/beatneat";
     private final String user = "isabel"; // Change to your local user
@@ -83,8 +83,8 @@ public class managerDB {
         }
     }
 
-    public ArrayList<orderItems> getOrderItems(int order_id) {
-        ArrayList<orderItems> tempList = new ArrayList<orderItems>();
+    public ArrayList<OrderItems> getOrderItems(int order_id) {
+        ArrayList<OrderItems> tempList = new ArrayList<OrderItems>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT products.product_id, products.name, products.price, products.active, orders_items.quantity FROM products INNER JOIN orders_items ON products.product_id = orders_items.product_id WHERE orders_items.order_id = " + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
@@ -95,7 +95,32 @@ public class managerDB {
                     float price = rs.getFloat("products.price");
                     Boolean active = rs.getBoolean("products.active");
                     int quantity = rs.getInt("orders_items.quantity");
-                    tempList.add(new orderItems(order_id, (new product(product_id, name, price, active)), quantity));
+                    tempList.add(new OrderItems(order_id, (new Product(product_id, name, price, active)), quantity));
+                } 
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public ArrayList<OrderMenus> getOrderMenus(int order_id) {
+        ArrayList<OrderMenus> tempList = new ArrayList<OrderMenus>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active, orders_menus.quantity FROM menus INNER JOIN orders_menus ON menus.menu_id = orders_menus.menu_id WHERE orders_menus.order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int menu_id = rs.getInt("menus.menu_id");
+                    String name = rs.getString("menus.name");
+                    float price = rs.getFloat("menus.price");
+                    Boolean active = rs.getBoolean("menus.active");
+                    int quantity = rs.getInt("orders_menus.quantity");
+                    tempList.add(new OrderMenus(order_id, (new Menu(menu_id, name, price, active)), quantity));
                 } 
                 connection.close();
                 return tempList;
@@ -190,17 +215,17 @@ public class managerDB {
         }
     }
 
-    public ArrayList<category> getAllCategories() {
-        ArrayList<category> tempList = new ArrayList<category>();
+    public ArrayList<Category> getAllCategoriesProducts() {
+        ArrayList<Category> tempList = new ArrayList<Category>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT category_id, category_name FROM categories";
+            String query = "SELECT category_id, category_name FROM categories WHERE iscategory_product = 1;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
                     int categoryID = rs.getInt("category_id");
                     String name = rs.getString("category_name");
                     if (getProductsByCategory(categoryID).size() != 0) {
-                        tempList.add(new category(categoryID, name));
+                        tempList.add(new Category(categoryID, name));
                     }
                 }
                 connection.close();
@@ -214,13 +239,37 @@ public class managerDB {
         }
     }
 
-    public ArrayList<product> getProductsByCategory(int category_id) {
-        ArrayList<product> tempList = new ArrayList<product>();
+    public ArrayList<Category> getAllCategoriesMenus() {
+        ArrayList<Category> tempList = new ArrayList<Category>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT category_id, category_name FROM categories WHERE iscategory_product = 0;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int categoryID = rs.getInt("category_id");
+                    String name = rs.getString("category_name");
+                    if (getMenusByCategory(categoryID).size() != 0) {
+                        tempList.add(new Category(categoryID, name));
+                    }
+                }
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public ArrayList<Product> getProductsByCategory(int category_id) {
+        ArrayList<Product> tempList = new ArrayList<Product>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT products.product_id, products.name, products.price, products.active FROM products " + 
             "INNER JOIN products_categories ON products.product_id = products_categories.product_id " +
             "INNER JOIN categories ON products_categories.category_id = categories.category_id " + 
-            "WHERE categories.category_id = " + category_id + ";";
+            "WHERE categories.category_id = " + category_id + " AND products.active = true;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -228,7 +277,35 @@ public class managerDB {
                     String name = rs.getString("products.name");
                     float price = rs.getFloat("products.price");
                     Boolean active = rs.getBoolean("products.active");
-                    tempList.add(new product(product_id, name, price, active));
+                    tempList.add(new Product(product_id, name, price, active));
+                }
+                // System.out.println(tempList);
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public ArrayList<Menu> getMenusByCategory(int category_id) {
+        ArrayList<Menu> tempList = new ArrayList<Menu>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active FROM menus " + 
+            "INNER JOIN menus_categories ON menus.menu_id = menus_categories.menu_id " +
+            "INNER JOIN categories ON menus_categories.category_id = categories.category_id " + 
+            "WHERE categories.category_id = " + category_id + " AND menus.active = true;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int menu_id = rs.getInt("menus.menu_id");
+                    String name = rs.getString("menus.name");
+                    float price = rs.getFloat("menus.price");
+                    Boolean active = rs.getBoolean("menus.active");
+                    tempList.add(new Menu(menu_id, name, price, active));
                 }
                 // System.out.println(tempList);
                 connection.close();
@@ -279,6 +356,20 @@ public class managerDB {
     public void addOrderItem(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "INSERT INTO orders_items VALUES (" + order_id + ", " + product_id + ", 1);";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+    
+    public void addOrderMenu(int order_id, int menu_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "INSERT INTO orders_menus VALUES (" + order_id + ", " + menu_id + ", 1);";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -357,10 +448,44 @@ public class managerDB {
         }
     }
 
+    public boolean checkMenuInOrder (int menu_id, int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT menu_id FROM orders_menus WHERE menu_id =  " + menu_id + " AND order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    connection.close();
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                System.out.println(e);
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
     public void updateProductQuantity(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "UPDATE orders_items SET quantity = (1+" + getProductQuantity(order_id, product_id) + ") WHERE order_id = " + 
                 order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void updateMenuQuantity(int order_id, int menu_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE orders_menus SET quantity = (1+" + getMenuQuantity(order_id, menu_id) + ") WHERE order_id = " + 
+                order_id + " AND menu_id = " + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -386,10 +511,45 @@ public class managerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
+    
+    public void setMenuQuantity(int order_id, int menu_id, int quantity) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE orders_menus SET quantity = " + quantity + " WHERE order_id = " + 
+                order_id + " AND menu_id = " + menu_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
 
     private int getProductQuantity(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT quantity FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    int quantity = rs.getInt("quantity");
+                    connection.close();
+                    return quantity;
+                }
+                return -1;
+            } catch (Exception e) {
+                System.out.println(e);
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private int getMenuQuantity(int order_id, int menu_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT quantity FROM orders_menus WHERE order_id = " + order_id + " AND menu_id = " + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
@@ -453,7 +613,7 @@ public class managerDB {
         }
     }
 
-    public employee_schedule getEmployee_schedules(int employee_id) {
+    public EmployeeSchedule getEmployee_schedules(int employee_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT * FROM employees_schedule;";
             try (Statement stmt = connection.createStatement()) {
@@ -467,7 +627,7 @@ public class managerDB {
                     String realtime_out = rs.getString("realtime_out");
                     Boolean undertime = rs.getBoolean("undertime");
                     connection.close();
-                    return new employee_schedule(employee_id, date, start_shift, end_shift, realtime_in, realtime_out, undertime);
+                    return new EmployeeSchedule(employee_id, date, start_shift, end_shift, realtime_in, realtime_out, undertime);
                 }
                 return null;
             } catch (Exception e) {
@@ -482,6 +642,20 @@ public class managerDB {
     public void deleteAllOrderItems(int order_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "DELETE FROM orders_items WHERE order_id = " + order_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void deleteAllOrderMenus(int order_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "DELETE FROM orders_menus WHERE order_id = " + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -510,6 +684,96 @@ public class managerDB {
     public void deleteOrderItem(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "DELETE FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void deleteOrderMenu(int order_id, int menu_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "DELETE FROM orders_menus WHERE order_id = " + order_id + " AND menu_id = " + menu_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public ArrayList<Product> getAllProducts() {
+        ArrayList<Product> tempList = new ArrayList<Product>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT * FROM products;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int product_id = rs.getInt("product_id");
+                    String name = rs.getString("name");
+                    float price = rs.getFloat("price");
+                    Boolean active = rs.getBoolean("active");
+                    tempList.add(new Product(product_id, name, price, active));
+                }
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public ArrayList<Menu> getAllMenus() {
+        ArrayList<Menu> tempList = new ArrayList<Menu>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT * FROM menus;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int menu_id = rs.getInt("menu_id");
+                    String name = rs.getString("name");
+                    float price = rs.getFloat("price");
+                    Boolean active = rs.getBoolean("active");
+                    tempList.add(new Menu(menu_id, name, price, active));
+                }
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void updateProductAvailability(int product_id, Boolean active) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE products SET active = "+ active + " WHERE product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    public void updateMenuAvailability(int menu_id, Boolean active) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "UPDATE menus SET active = "+ active + " WHERE menu_id = " + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();

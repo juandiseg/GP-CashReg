@@ -1,6 +1,7 @@
 package windows;
 
-import windows.checksWindow.main_cWindow;
+import windows.availabilityWindow.MainAWindow;
+import windows.checksWindow.MainCWindow;
 import windows.ordersWindow.*;
 import windows.tablesWindow.*;
 
@@ -8,11 +9,11 @@ import java.awt.event.ActionListener;
 import iLayouts.GridLayoutApplyer;
 import java.awt.event.ActionEvent;
 
-import util.abstractUpdater;
-import util.managerDB;
+import util.AbstractUpdater;
+import util.ManagerDB;
 import javax.swing.*;
 
-public class main_Window extends abstractUpdater {
+public class MainWindow extends AbstractUpdater {
 
     static JFrame theFrame = new JFrame("Main Window");
     private JButton button1 = new JButton("Orders");
@@ -20,10 +21,10 @@ public class main_Window extends abstractUpdater {
     private JButton button3 = new JButton("Check availability");
     private JButton button4 = new JButton("Tables");
 
-    public main_Window() {
+    public MainWindow() {
         super(null, new GridLayoutApplyer(theFrame, 4));
         setFrame(theFrame);
-        setManagerDB(new managerDB());
+        setManagerDB(new ManagerDB());
         theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         theFrame.setSize(1000, 650);
         theFrame.setVisible(true);
@@ -40,37 +41,37 @@ public class main_Window extends abstractUpdater {
     }
 
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
 
         // Orders button
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                main_oWindow ordersWdw = new main_oWindow(temp);
-                ordersWdw.updateToThisMenu();
+                MainOWindow tempWind = new MainOWindow(temp);
+                tempWind.updateToThisMenu();
             }
         });
 
         // Check-in/Check-out button
         button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                main_cWindow checkWdw = new main_cWindow(temp);
-                checkWdw.updateToThisMenu();
+                MainCWindow tempWind = new MainCWindow(temp);
+                tempWind.updateToThisMenu();
             }
         });
 
         // Products availability button
         button3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // main_productWindow availabilityWdw = new main_productWindow(temp);
-                // availabilityWdw.updateToThisMenu();
+                MainAWindow tempWind = new MainAWindow(temp);
+                tempWind.updateToThisMenu();
             }
         });
 
         // Tables button
         button4.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                main_tWindow tableWdw = new main_tWindow(temp);
-                tableWdw.updateToThisMenu();
+                MainTWindow tempWind = new MainTWindow(temp);
+                tempWind.updateToThisMenu();
             }
         });
     }

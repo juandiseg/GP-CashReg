@@ -8,29 +8,27 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import iLayouts.PanelGridLayout;
-import util.abstractPanel;
-import util.abstractUpdater;
-import util.managerDB;
+import util.AbstractPanel;
+import util.AbstractTable;
+import util.ManagerDB;
 
-public class main_mWindow extends abstractPanel {
+public class MainMWindow extends AbstractPanel {
     
     private JButton button1 = new JButton("Products");
     private JButton button2 = new JButton("Menus");
     static JPanel thePanel = new JPanel();
-    private abstractUpdater previousWindow;
+    private AbstractTable table;
     private int order_id;
     private int table_id;
-    private Boolean newOrder;
 
-    public main_mWindow(abstractUpdater previousWindow, JPanel mainPanel, int order_id, int table_id, Boolean newOrder) {
+    public MainMWindow(AbstractTable table, JPanel mainPanel, int order_id, int table_id) {
         super(null, new PanelGridLayout(thePanel, 2));
-        this.previousWindow = previousWindow;
+        this.table = table;
         this.order_id = order_id;
         this.table_id = table_id;
-        this.newOrder = newOrder;
 
         setPanel(thePanel);
-        setManagerDB(new managerDB());
+        setManagerDB(new ManagerDB());
         thePanel.setPreferredSize(new Dimension(350, 550));
         thePanel.setVisible(true);
         mainPanel.add(thePanel);
@@ -45,13 +43,20 @@ public class main_mWindow extends abstractPanel {
 
     @Override
     public void addActionListeners() {
-        abstractPanel temp = this;
+        AbstractPanel temp = this;
+
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                categories_mWindow checkWdw = new categories_mWindow(previousWindow, temp, order_id, table_id, newOrder);
+                ItemCategoriesPanel checkWdw = new ItemCategoriesPanel(table, temp, order_id, table_id);
                 checkWdw.updateToThisPanel();
             }
         });
         
+        button2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MenuCategoriesPanel checkWdw = new MenuCategoriesPanel(table, temp, order_id, table_id);
+                checkWdw.updateToThisPanel();
+            }
+        });
     }
 }

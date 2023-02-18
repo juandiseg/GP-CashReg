@@ -1,11 +1,12 @@
 package windows.ordersWindow;
 
 import iLayouts.FlowLayoutApplyer;
-import objects.orderItems;
-import util.abstractTable;
-import util.abstractUpdater;
-import windows.main_Window;
-import windows.menuPanel.main_mWindow;
+import objects.OrderItems;
+import objects.OrderMenus;
+import util.AbstractTable;
+import util.AbstractUpdater;
+import windows.MainWindow;
+import windows.menuPanel.MainMWindow;
 
 import java.util.ArrayList;
 
@@ -15,19 +16,18 @@ import javax.swing.JPanel;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 
-public class add_oWindow extends abstractUpdater {
+public class AddOWindow extends AbstractUpdater {
 
-    private abstractUpdater previousWindow;
     private int order_id;
     private int table_id;
     private JButton checkButton = new JButton("Check-out");
     private JButton backButton = new JButton("Back");
     private JButton doneButton = new JButton("Done");
     private Boolean newOrder;
+    private AbstractTable table;
     
-    public add_oWindow(abstractUpdater previousWindow, int order_id, int table_id, Boolean newOrder) {
+    public AddOWindow(AbstractUpdater previousWindow, int order_id, int table_id, Boolean newOrder) {
         super(previousWindow, new FlowLayoutApplyer(theFrame));
-        this.previousWindow = previousWindow;
         this.order_id = order_id;
         this.table_id = table_id;
         this.newOrder = newOrder;
@@ -36,7 +36,8 @@ public class add_oWindow extends abstractUpdater {
     @Override
     public void addComponents() {
         theFrame.setTitle(null);
-        ArrayList<orderItems> order = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
         JPanel panel = new JPanel();
         JLabel label = new JLabel("Order ID: " + order_id);
 
@@ -45,7 +46,7 @@ public class add_oWindow extends abstractUpdater {
         panel.add(label, BorderLayout.NORTH);
         
         JPanel panel2 = new JPanel();
-        abstractTable table = new abstractTable(panel2, order_id, order);
+        table = new AbstractTable(panel2, order_id, orderItems, orderMenus);
         table.clickableTable();
         panel.add(panel2);
 
@@ -57,7 +58,7 @@ public class add_oWindow extends abstractUpdater {
         panel.add(panel3, BorderLayout.PAGE_END);
 
         JPanel panel4 = new JPanel();
-        new main_mWindow(previousWindow, panel4, order_id, table_id, newOrder);
+        new MainMWindow(table, panel4, order_id, table_id);
 
         theFrame.add(panel);
         theFrame.add(panel4);
@@ -65,18 +66,18 @@ public class add_oWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         
         checkButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                check_oWindow tempWind = new check_oWindow(temp, order_id);
+                CheckOWindow tempWind = new CheckOWindow(temp, order_id);
                 tempWind.updateToThisMenu();
             }
         });
 
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new main_Window();
+                new MainWindow();
             }
         });
 

@@ -11,16 +11,17 @@ import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 import iLayouts.FlowLayoutApplyer;
-import objects.orderItems;
-import util.abstractUpdater;
-import windows.main_Window;
+import objects.OrderItems;
+import objects.OrderMenus;
+import util.AbstractUpdater;
+import windows.MainWindow;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.awt.event.ActionEvent;
 
-public class receipt_oWindow extends abstractUpdater {
+public class ReceiptWindow extends AbstractUpdater {
 
     private int order_id;
     private float subtotal;
@@ -37,7 +38,7 @@ public class receipt_oWindow extends abstractUpdater {
     private JButton doneButton = new JButton("Done");
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    public receipt_oWindow(abstractUpdater previousWindow, int order_id, float subtotal, float tax, float total) {
+    public ReceiptWindow(AbstractUpdater previousWindow, int order_id, float subtotal, float tax, float total) {
         super(previousWindow, new FlowLayoutApplyer(theFrame));
         this.order_id = order_id;
         this.subtotal = subtotal;
@@ -46,10 +47,14 @@ public class receipt_oWindow extends abstractUpdater {
     }
 
     private void createTable(JPanel panel) {
-        ArrayList<orderItems> order = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
         
-        for (orderItems product : order) {
-            model.addRow(new String[] {Integer.toString(product.getQuantity()), product.getName(), df.format(product.getProduct().getPrice()*product.getQuantity())});
+        for (OrderItems item : orderItems) {
+            model.addRow(new String[] {Integer.toString(item.getQuantity()), item.getName(), df.format(item.getProduct().getPrice()*item.getQuantity())});
+        }
+        for (OrderMenus menu : orderMenus) {
+            model.addRow(new String[] {Integer.toString(menu.getQuantity()), menu.getName(), df.format(menu.getMenu().getPrice()*menu.getQuantity())});
         }
 
         t.setModel(model);
@@ -94,7 +99,7 @@ public class receipt_oWindow extends abstractUpdater {
     public void addActionListeners() {
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new main_Window();
+                new MainWindow();
             }
         });
     }

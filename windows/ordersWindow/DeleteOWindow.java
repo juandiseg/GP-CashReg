@@ -4,21 +4,21 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import iLayouts.GridLayoutApplyer;
-import util.abstractUpdater;
-import windows.main_Window;
+import util.AbstractUpdater;
+import windows.MainWindow;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-public class delete_oWindow extends abstractUpdater {
+public class DeleteOWindow extends AbstractUpdater {
 
     private ArrayList<JButton> buttons = new ArrayList<>();
     private JButton backButton = new JButton("Back");
     private ArrayList<Integer> orders = new ArrayList<>();
 
-    public delete_oWindow(abstractUpdater previousWindow) {
+    public DeleteOWindow(AbstractUpdater previousWindow) {
         super(previousWindow, new GridLayoutApplyer(theFrame, theManagerDB.getOrders().size()+1));
         orders = theManagerDB.getOrders();
     }
@@ -51,8 +51,9 @@ public class delete_oWindow extends abstractUpdater {
                     if (n==0) {
                         if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
                         theManagerDB.deleteAllOrderItems(order_id);
+                        theManagerDB.deleteAllOrderMenus(order_id);
                         theManagerDB.deleteOrderSummary(order_id);
-                        new main_Window();
+                        new MainWindow();
                     }
                 }
             });

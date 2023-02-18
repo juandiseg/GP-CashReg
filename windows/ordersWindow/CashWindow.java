@@ -8,11 +8,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import iLayouts.FlowLayoutApplyer;
-import objects.orderItems;
-import util.abstractTable;
-import util.abstractUpdater;
-import util.numberInput;
-import windows.main_Window;
+import objects.OrderItems;
+import objects.OrderMenus;
+import util.AbstractTable;
+import util.AbstractUpdater;
+import util.NumberInput;
+import windows.MainWindow;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 
 import java.text.DecimalFormat;
 
-public class cash_oWindow extends abstractUpdater {
+public class CashWindow extends AbstractUpdater {
 
     private int order_id;
     private float change;
@@ -35,7 +36,7 @@ public class cash_oWindow extends abstractUpdater {
     private JPanel panel3 = new JPanel();
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    public cash_oWindow(abstractUpdater previousWindow, int order_id) {
+    public CashWindow(AbstractUpdater previousWindow, int order_id) {
         super(previousWindow, new FlowLayoutApplyer(theFrame));
         this.order_id = order_id;
     }
@@ -44,13 +45,14 @@ public class cash_oWindow extends abstractUpdater {
     public void addComponents() {
         theFrame.setTitle("Cash Payment");
 
-        ArrayList<orderItems> order = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
         JPanel panel = new JPanel();
         JLabel label = new JLabel("Order ID: " + order_id);
 
         panel.setLayout(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
-        new abstractTable(panel, order_id, order);
+        new AbstractTable(panel, order_id, orderItems, orderMenus);
 
         JPanel panel2 = new JPanel();
         panel2.setLayout(new BorderLayout());
@@ -74,10 +76,14 @@ public class cash_oWindow extends abstractUpdater {
     }
 
     private float getSubtotal() {
-        ArrayList<orderItems> order = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
+        ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
         float total = 0;
-        for (orderItems product : order) {
-            total = total + (product.getProduct().getPrice() * product.getQuantity());
+        for (OrderItems items : orderItems) {
+            total = total + (items.getProduct().getPrice() * items.getQuantity());
+        }
+        for (OrderMenus menus : orderMenus) {
+            total = total + (menus.getMenu().getPrice() * menus.getQuantity());
         }
         total = Float.parseFloat(df.format(total));
         return total;
@@ -95,13 +101,13 @@ public class cash_oWindow extends abstractUpdater {
     
     private JPanel keypad() {
         JPanel p = new JPanel();
-        new numberInput(p, textField);
+        new NumberInput(p, textField);
         return p;
     }
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         int table_id = theManagerDB.getTableID(order_id);
         
         okButton.addActionListener(new ActionListener() {
@@ -131,13 +137,13 @@ public class cash_oWindow extends abstractUpdater {
                     if (n == 0) {
                         theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), true);
                         if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
-                        receipt_oWindow tempWind = new receipt_oWindow(temp, order_id, getSubtotal(), getTax(), getTotal());
+                        ReceiptWindow tempWind = new ReceiptWindow(temp, order_id, getSubtotal(), getTax(), getTotal());
                         tempWind.updateToThisMenu();
                         panel3.removeAll();
                     } else if (n == 1) {
                         theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), true);
                         if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
-                        new main_Window();
+                        new MainWindow();
                     }
                 }
             }

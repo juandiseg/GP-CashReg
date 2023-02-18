@@ -2,13 +2,13 @@ package windows.ordersWindow;
 
 import java.awt.event.ActionListener;
 import iLayouts.GridLayoutApplyer;
-import util.abstractUpdater;
+import util.AbstractUpdater;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-public class main_oWindow extends abstractUpdater {
+public class MainOWindow extends AbstractUpdater {
 
     private JButton button1 = new JButton("Add Order");
     private JButton button2 = new JButton("Delete Order");
@@ -16,7 +16,7 @@ public class main_oWindow extends abstractUpdater {
     private JButton button4 = new JButton("Check-out Order");
     private JButton backButton = new JButton("Back");
 
-    public main_oWindow(abstractUpdater previousWindow) {
+    public MainOWindow(AbstractUpdater previousWindow) {
         super(previousWindow, new GridLayoutApplyer(theFrame, 5));
     }
 
@@ -32,11 +32,11 @@ public class main_oWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                assist_add_oWindow tempWind = new assist_add_oWindow(temp);
+                AssistAddOWindow tempWind = new AssistAddOWindow(temp);
                 tempWind.updateToThisMenu();
             }
         });
@@ -46,7 +46,7 @@ public class main_oWindow extends abstractUpdater {
                 if(theManagerDB.getOrders().size() == 0){
                     JOptionPane.showMessageDialog(theFrame, "There isn't any order at the moment", "No orders", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    delete_oWindow tempWinw = new delete_oWindow(temp);
+                    DeleteOWindow tempWinw = new DeleteOWindow(temp);
                     tempWinw.updateToThisMenu();
                 }
             }
@@ -57,7 +57,7 @@ public class main_oWindow extends abstractUpdater {
                 if(theManagerDB.getOrders().size() == 0){
                     JOptionPane.showMessageDialog(theFrame, "There isn't any order at the moment", "No orders", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    edit_oWindow tempWind = new edit_oWindow(temp);
+                    EditOWindow tempWind = new EditOWindow(temp);
                     tempWind.updateToThisMenu();
                 }
             }
@@ -68,7 +68,7 @@ public class main_oWindow extends abstractUpdater {
                 if(theManagerDB.getOrders().size() == 0){
                     JOptionPane.showMessageDialog(theFrame, "There isn't any order at the moment", "No orders", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    assist_check_oWindow tempWinw = new assist_check_oWindow(temp);
+                    AssistCheckOWindow tempWinw = new AssistCheckOWindow(temp);
                     tempWinw.updateToThisMenu();
                 }
             }

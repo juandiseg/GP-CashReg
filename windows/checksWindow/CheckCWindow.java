@@ -10,18 +10,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import iLayouts.FlowLayoutApplyer;
-import objects.employee_schedule;
-import util.abstractUpdater;
-import util.numberInput;
+import objects.EmployeeSchedule;
+import util.AbstractUpdater;
+import util.NumberInput;
 
-public class check_cWindow extends abstractUpdater {
+public class CheckCWindow extends AbstractUpdater {
 
     private String name;
     private JTextField textField = new JTextField(20);
     private JButton acceptButton = new JButton();
     private JButton backButton = new JButton("Back");
 
-    public check_cWindow(abstractUpdater previousWindow, String name) {
+    public CheckCWindow(AbstractUpdater previousWindow, String name) {
         super(previousWindow, new FlowLayoutApplyer(theFrame));
         this.name = name;
     }
@@ -62,7 +62,7 @@ public class check_cWindow extends abstractUpdater {
                     theFrame.repaint();
                 }
                 if ((check == 1) && (name == "Check out")) {
-                    employee_schedule schedule = theManagerDB.getEmployee_schedules(Integer.parseInt(textField.getText()));
+                    EmployeeSchedule schedule = theManagerDB.getEmployee_schedules(Integer.parseInt(textField.getText()));
                     LocalTime start_shift = LocalTime.parse(schedule.getStart_shift());
                     LocalTime end_shift = LocalTime.parse(schedule.getEnd_shift());
                     LocalTime realtime_in = LocalTime.parse(schedule.getRealtime_in());
@@ -92,7 +92,7 @@ public class check_cWindow extends abstractUpdater {
 
     private JPanel keypad() {
         JPanel p = new JPanel();
-        new numberInput(p, textField);
+        new NumberInput(p, textField);
         return p;
     }
     

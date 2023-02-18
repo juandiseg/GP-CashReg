@@ -3,14 +3,14 @@ package util;
 import javax.swing.JFrame;
 import iLayouts.iLayout;
 
-public abstract class abstractUpdater {
+public abstract class AbstractUpdater {
 
     public static JFrame theFrame;
-    public static managerDB theManagerDB;
-    private abstractUpdater previousWindow;
+    public static ManagerDB theManagerDB;
+    private AbstractUpdater previousWindow;
     private iLayout layoutApplyer;
 
-    public abstractUpdater(abstractUpdater previousWindow, iLayout layoutApplyer) {
+    public AbstractUpdater(AbstractUpdater previousWindow, iLayout layoutApplyer) {
         this.previousWindow = previousWindow;
         this.layoutApplyer = layoutApplyer;
     }
@@ -19,7 +19,7 @@ public abstract class abstractUpdater {
         theFrame = _theFrame;
     }
 
-    final public void setManagerDB(managerDB _theManagerDB) {
+    final public void setManagerDB(ManagerDB _theManagerDB) {
         theManagerDB = _theManagerDB;
     }
 
@@ -50,7 +50,7 @@ public abstract class abstractUpdater {
 
     public abstract void addActionListeners();
 
-    public abstractUpdater getPreviousWindow() {
+    public AbstractUpdater getPreviousWindow() {
         return previousWindow;
     }
 }

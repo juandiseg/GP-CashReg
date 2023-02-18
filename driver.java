@@ -1,7 +1,7 @@
-import windows.main_Window;
+import windows.MainWindow;
 
-public class driver {
+public class Driver {
     public static void main(String[] args) {
-        new main_Window();
+        new MainWindow();
     }
 }

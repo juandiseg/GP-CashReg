@@ -4,19 +4,19 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import iLayouts.GridLayoutApplyer;
-import util.abstractUpdater;
+import util.AbstractUpdater;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 
-public class edit_oWindow extends abstractUpdater {
+public class EditOWindow extends AbstractUpdater {
 
     private ArrayList<JButton> buttons = new ArrayList<>();
     private JButton backButton = new JButton("Back");
     private ArrayList<Integer> orders = new ArrayList<>();
 
-    public edit_oWindow(abstractUpdater previousWindow) {
+    public EditOWindow(AbstractUpdater previousWindow) {
         super(previousWindow, new GridLayoutApplyer(theFrame, theManagerDB.getOrders().size()+1));
         orders = theManagerDB.getOrders();
     }
@@ -35,7 +35,7 @@ public class edit_oWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         
         for (int i=0; i < orders.size(); i++) {
             int order_id = orders.get(i);
@@ -43,7 +43,7 @@ public class edit_oWindow extends abstractUpdater {
 
             buttons.get(i).addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    add_oWindow tempWind = new add_oWindow(temp, order_id, table_id, false);
+                    AddOWindow tempWind = new AddOWindow(temp, order_id, table_id, false);
                     buttons.removeAll(buttons);
                     tempWind.updateToThisMenu();
                 }

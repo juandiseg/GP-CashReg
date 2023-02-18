@@ -4,13 +4,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import iLayouts.FlowLayoutApplyer;
-import windows.main_Window;
-import util.abstractUpdater;
+import windows.MainWindow;
+import util.AbstractUpdater;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
-public class table_tWindow extends abstractUpdater {
+public class TableWindow extends AbstractUpdater {
 
     private JLabel statusLabel = new JLabel();
     private JButton viewOrder = new JButton("View Order");
@@ -18,7 +18,7 @@ public class table_tWindow extends abstractUpdater {
     private int table_id;
     private String status;
 
-    public table_tWindow(abstractUpdater previousWindow, int table_id) {
+    public TableWindow(AbstractUpdater previousWindow, int table_id) {
         super(previousWindow, new FlowLayoutApplyer(theFrame));
         this.table_id = table_id;
         this.getStatus();
@@ -42,18 +42,18 @@ public class table_tWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
 
         viewOrder.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                viewOrder_tWindow tempWind = new viewOrder_tWindow(temp, theManagerDB.getOrderID(table_id), table_id);
+                ViewOrderWindow tempWind = new ViewOrderWindow(temp, theManagerDB.getOrderID(table_id), table_id);
                 tempWind.updateToThisMenu();
             }
         });
 
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new main_tWindow(new main_Window()).updateToThisMenu();
+                new MainTWindow(new MainWindow()).updateToThisMenu();
             }
         });
     }

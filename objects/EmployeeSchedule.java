@@ -1,6 +1,6 @@
 package objects;
 
-public class employee_schedule {
+public class EmployeeSchedule {
 
     private int employee_id;
     private String date;
@@ -10,7 +10,7 @@ public class employee_schedule {
     private String realtime_out;
     private Boolean undertime;
 
-    public employee_schedule(int employee_id, String date, String start_shift, String end_shift, String realtime_in, String realtime_out, Boolean undertime) {
+    public EmployeeSchedule(int employee_id, String date, String start_shift, String end_shift, String realtime_in, String realtime_out, Boolean undertime) {
         this.employee_id = employee_id;
         this.date = date;
         this.start_shift = start_shift;

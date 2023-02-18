@@ -4,20 +4,20 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import iLayouts.GridLayoutApplyer;
-import util.abstractUpdater;
+import util.AbstractUpdater;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 
-public class assist_add_oWindow extends abstractUpdater {
+public class AssistAddOWindow extends AbstractUpdater {
 
     private ArrayList<JButton> buttons = new ArrayList<>();
     private JButton toGoButton = new JButton("To go");
     private JButton backButton = new JButton("Back");
     private ArrayList<Integer> freeTables = new ArrayList<>();
 
-    public assist_add_oWindow(abstractUpdater previousWindow) {
+    public AssistAddOWindow(AbstractUpdater previousWindow) {
         super(previousWindow, new GridLayoutApplyer(theFrame, theManagerDB.getFreeTables().size()+2));
         freeTables = theManagerDB.getFreeTables();
     }
@@ -37,14 +37,14 @@ public class assist_add_oWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         int order_id = theManagerDB.getLastOrderID() + 1;
         
         for (int i=0; i < freeTables.size(); i++) {
             int table_id  = freeTables.get(i);
             buttons.get(i).addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    add_oWindow tempWind = new add_oWindow(temp, order_id, table_id, true);
+                    AddOWindow tempWind = new AddOWindow(temp, order_id, table_id, true);
                     buttons.removeAll(buttons);
                     tempWind.updateToThisMenu();
                 }
@@ -53,7 +53,7 @@ public class assist_add_oWindow extends abstractUpdater {
 
         toGoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                add_oWindow tempWind = new add_oWindow(temp, order_id, -1, true);
+                AddOWindow tempWind = new AddOWindow(temp, order_id, -1, true);
                 tempWind.updateToThisMenu();
             }
         });

@@ -2,18 +2,18 @@ package windows.checksWindow;
 
 import java.awt.event.ActionListener;
 import iLayouts.GridLayoutApplyer;
-import util.abstractUpdater;
+import util.AbstractUpdater;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 
-public class main_cWindow extends abstractUpdater {
+public class MainCWindow extends AbstractUpdater {
 
     private JButton button1 = new JButton("Check in");
     private JButton button2 = new JButton("Check out");
     private JButton backButton = new JButton("Back");
 
-    public main_cWindow(abstractUpdater previousWindow) {
+    public MainCWindow(AbstractUpdater previousWindow) {
         super(previousWindow, new GridLayoutApplyer(theFrame, 3));
     }
 
@@ -27,16 +27,16 @@ public class main_cWindow extends abstractUpdater {
 
     @Override
     public void addActionListeners() {
-        abstractUpdater temp = this;
+        AbstractUpdater temp = this;
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                check_cWindow tempWind = new check_cWindow(temp, button1.getText());
+                CheckCWindow tempWind = new CheckCWindow(temp, button1.getText());
                 tempWind.updateToThisMenu();
             }
         });
         button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                check_cWindow tempWind = new check_cWindow(temp, button2.getText());
+                CheckCWindow tempWind = new CheckCWindow(temp, button2.getText());
                 tempWind.updateToThisMenu();
             }
         });
