@@ -15,8 +15,8 @@ import java.sql.ResultSet;
 public class ManagerDB {
 
     private final static String url = "jdbc:mysql://localhost:3306/beatneat";
-    private final String user = "isabel"; // Change to your local user
-    private final String password = "Isabel"; // Change to your local password
+    private final static String user = "juandi"; // Change to your local user
+    private final static String password = "Juandi"; // Change to your local password
 
     public ArrayList<Table> getTables() {
         ArrayList<Table> tempList = new ArrayList<Table>();
@@ -29,7 +29,7 @@ public class ManagerDB {
                     int order_id = rs.getInt("order_id");
                     Boolean is_empty = rs.getBoolean("is_empty");
                     tempList.add(new Table(table_id, order_id, is_empty));
-                } 
+                }
                 connection.close();
                 return tempList;
             } catch (Exception e) {
@@ -94,7 +94,7 @@ public class ManagerDB {
                 while (rs.next()) {
                     int table_id = rs.getInt("table_id");
                     tempList.add(table_id);
-                } 
+                }
                 connection.close();
                 return tempList;
             } catch (Exception e) {
@@ -115,7 +115,7 @@ public class ManagerDB {
                 while (rs.next()) {
                     int table_id = rs.getInt("table_id");
                     tempList.add(table_id);
-                } 
+                }
                 connection.close();
                 return tempList;
             } catch (Exception e) {
@@ -130,7 +130,8 @@ public class ManagerDB {
     public ArrayList<OrderItems> getOrderItems(int order_id) {
         ArrayList<OrderItems> tempList = new ArrayList<OrderItems>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT products.product_id, products.name, products.price, products.active, orders_items.quantity FROM products INNER JOIN orders_items ON products.product_id = orders_items.product_id WHERE orders_items.order_id = " + order_id + ";";
+            String query = "SELECT * FROM orders_items NATURAL JOIN products WHERE order_id = " + order_id
+                    + " AND active = true";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -140,7 +141,7 @@ public class ManagerDB {
                     Boolean active = rs.getBoolean("products.active");
                     int quantity = rs.getInt("orders_items.quantity");
                     tempList.add(new OrderItems(order_id, (new Product(product_id, name, price, active)), quantity));
-                } 
+                }
                 connection.close();
                 return tempList;
             } catch (Exception e) {
@@ -155,7 +156,8 @@ public class ManagerDB {
     public ArrayList<OrderMenus> getOrderMenus(int order_id) {
         ArrayList<OrderMenus> tempList = new ArrayList<OrderMenus>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active, orders_menus.quantity FROM menus INNER JOIN orders_menus ON menus.menu_id = orders_menus.menu_id WHERE orders_menus.order_id = " + order_id + ";";
+            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active, orders_menus.quantity FROM menus INNER JOIN orders_menus ON menus.menu_id = orders_menus.menu_id WHERE orders_menus.order_id = "
+                    + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -165,7 +167,7 @@ public class ManagerDB {
                     Boolean active = rs.getBoolean("menus.active");
                     int quantity = rs.getInt("orders_menus.quantity");
                     tempList.add(new OrderMenus(order_id, (new Menu(menu_id, name, price, active)), quantity));
-                } 
+                }
                 connection.close();
                 return tempList;
             } catch (Exception e) {
@@ -206,7 +208,7 @@ public class ManagerDB {
                 while (rs.next()) {
                     int order_id = rs.getInt("order_id");
                     tempList.add(order_id);
-                } 
+                }
                 connection.close();
                 return tempList;
             } catch (Exception e) {
@@ -237,15 +239,15 @@ public class ManagerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-    
+
     public int checkEmployeeID(int employee_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT employee_id FROM employees WHERE employee_id =  " + employee_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
-                connection.close();
-                return 1;
+                    connection.close();
+                    return 1;
                 }
                 JOptionPane.showMessageDialog(null, "No matching ID found", "Error", JOptionPane.ERROR_MESSAGE);
                 return 0;
@@ -309,9 +311,10 @@ public class ManagerDB {
     public ArrayList<Product> getProductsByCategory(int category_id) {
         ArrayList<Product> tempList = new ArrayList<Product>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT products.product_id, products.name, products.price, products.active FROM products " + 
-            "INNER JOIN categories ON products.category_id = categories.category_id " + 
-            "WHERE categories.category_id = " + category_id + " AND products.active = true AND categories.iscategory_product = true;";
+            String query = "SELECT products.product_id, products.name, products.price, products.active FROM products " +
+                    "INNER JOIN categories ON products.category_id = categories.category_id " +
+                    "WHERE categories.category_id = " + category_id
+                    + " AND products.active = true AND categories.iscategory_product = true;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -335,9 +338,10 @@ public class ManagerDB {
     public ArrayList<Menu> getMenusByCategory(int category_id) {
         ArrayList<Menu> tempList = new ArrayList<Menu>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active FROM menus " + 
-            "INNER JOIN categories ON menus.category_id = categories.category_id " + 
-            "WHERE categories.category_id = " + category_id + " AND menus.active = true AND categories.iscategory_product = false;";
+            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active FROM menus " +
+                    "INNER JOIN categories ON menus.category_id = categories.category_id " +
+                    "WHERE categories.category_id = " + category_id
+                    + " AND menus.active = true AND categories.iscategory_product = false;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -379,8 +383,8 @@ public class ManagerDB {
 
     public void addNewOrder(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "INSERT INTO orders_summary VALUES (" + order_id + ", '" + java.time.LocalTime.now() + 
-                "', NULL, NULL, NULL, NULL, '" + java.time.LocalDate.now() + "', NULL);";
+            String query = "INSERT INTO orders_summary VALUES (" + order_id + ", '" + java.time.LocalTime.now() +
+                    "', NULL, NULL, NULL, NULL, '" + java.time.LocalDate.now() + "', NULL);";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -391,7 +395,7 @@ public class ManagerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-    
+
     public void addOrderItem(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "INSERT INTO orders_items VALUES (" + order_id + ", " + product_id + ", 1);";
@@ -405,7 +409,7 @@ public class ManagerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-    
+
     public void addOrderMenu(int order_id, int menu_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "INSERT INTO orders_menus VALUES (" + order_id + ", " + menu_id + ", 1);";
@@ -442,7 +446,8 @@ public class ManagerDB {
 
     public void makeTableOccupied(int order_id, int table_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE tables SET order_id = " + order_id +", is_empty = 0 WHERE table_id = " + table_id +";";
+            String query = "UPDATE tables SET order_id = " + order_id + ", is_empty = 0 WHERE table_id = " + table_id
+                    + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -456,7 +461,7 @@ public class ManagerDB {
 
     public void makeTableEmpty(int table_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE tables SET order_id = NULL, is_empty = 1 WHERE table_id = " + table_id +";";
+            String query = "UPDATE tables SET order_id = NULL, is_empty = 1 WHERE table_id = " + table_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -468,9 +473,10 @@ public class ManagerDB {
         }
     }
 
-    public boolean checkProductInOrder (int product_id, int order_id) {
+    public boolean checkProductInOrder(int product_id, int order_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT product_id FROM orders_items WHERE product_id =  " + product_id + " AND order_id = " + order_id + ";";
+            String query = "SELECT product_id FROM orders_items WHERE product_id =  " + product_id + " AND order_id = "
+                    + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
@@ -487,9 +493,10 @@ public class ManagerDB {
         }
     }
 
-    public boolean checkMenuInOrder (int menu_id, int order_id) {
+    public boolean checkMenuInOrder(int menu_id, int order_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT menu_id FROM orders_menus WHERE menu_id =  " + menu_id + " AND order_id = " + order_id + ";";
+            String query = "SELECT menu_id FROM orders_menus WHERE menu_id =  " + menu_id + " AND order_id = "
+                    + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
@@ -508,8 +515,9 @@ public class ManagerDB {
 
     public void updateProductQuantity(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE orders_items SET quantity = (1+" + getProductQuantity(order_id, product_id) + ") WHERE order_id = " + 
-                order_id + " AND product_id = " + product_id + ";";
+            String query = "UPDATE orders_items SET quantity = (1+" + getProductQuantity(order_id, product_id)
+                    + ") WHERE order_id = " +
+                    order_id + " AND product_id = " + product_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -523,8 +531,9 @@ public class ManagerDB {
 
     public void updateMenuQuantity(int order_id, int menu_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE orders_menus SET quantity = (1+" + getMenuQuantity(order_id, menu_id) + ") WHERE order_id = " + 
-                order_id + " AND menu_id = " + menu_id + ";";
+            String query = "UPDATE orders_menus SET quantity = (1+" + getMenuQuantity(order_id, menu_id)
+                    + ") WHERE order_id = " +
+                    order_id + " AND menu_id = " + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -535,11 +544,11 @@ public class ManagerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-    
+
     public void setProductQuantity(int order_id, int product_id, int quantity) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE orders_items SET quantity = " + quantity + " WHERE order_id = " + 
-                order_id + " AND product_id = " + product_id + ";";
+            String query = "UPDATE orders_items SET quantity = " + quantity + " WHERE order_id = " +
+                    order_id + " AND product_id = " + product_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -550,11 +559,11 @@ public class ManagerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-    
+
     public void setMenuQuantity(int order_id, int menu_id, int quantity) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE orders_menus SET quantity = " + quantity + " WHERE order_id = " + 
-                order_id + " AND menu_id = " + menu_id + ";";
+            String query = "UPDATE orders_menus SET quantity = " + quantity + " WHERE order_id = " +
+                    order_id + " AND menu_id = " + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -568,7 +577,8 @@ public class ManagerDB {
 
     private int getProductQuantity(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT quantity FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id + ";";
+            String query = "SELECT quantity FROM orders_items WHERE order_id = " + order_id + " AND product_id = "
+                    + product_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
@@ -588,7 +598,8 @@ public class ManagerDB {
 
     private int getMenuQuantity(int order_id, int menu_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT quantity FROM orders_menus WHERE order_id = " + order_id + " AND menu_id = " + menu_id + ";";
+            String query = "SELECT quantity FROM orders_menus WHERE order_id = " + order_id + " AND menu_id = "
+                    + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
@@ -608,9 +619,10 @@ public class ManagerDB {
 
     public void checkOutOrder(int order_id, float total, float tax, float subtotal, Boolean cash) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE orders_summary SET time_out = '" + java.time.LocalTime.now() + "', total = " + total + 
-                ", tax = " + tax + ", subtotal = " + subtotal + ", cash = " + cash + 
-                " WHERE order_id = " + order_id + ";";
+            String query = "UPDATE orders_summary SET time_out = '" + java.time.LocalTime.now() + "', total = " + total
+                    +
+                    ", tax = " + tax + ", subtotal = " + subtotal + ", cash = " + cash +
+                    " WHERE order_id = " + order_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -625,7 +637,7 @@ public class ManagerDB {
     public boolean checkIn(int employee_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "UPDATE employees_schedule SET realtime_in = '" + java.time.LocalTime.now() +
-                "' WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
+                    "' WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -641,8 +653,9 @@ public class ManagerDB {
 
     public boolean checkOut(int employee_id, String realtime_out, Boolean undertime) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE employees_schedule SET realtime_out = '" + realtime_out + "', undertime = " + undertime + 
-            " WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
+            String query = "UPDATE employees_schedule SET realtime_out = '" + realtime_out + "', undertime = "
+                    + undertime +
+                    " WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -658,7 +671,8 @@ public class ManagerDB {
 
     public EmployeeShift getEmployee_shift(int employee_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM employees_schedule WHERE employee_id = " + employee_id + " AND shift_date = '" + java.time.LocalDate.now() + "';";
+            String query = "SELECT * FROM employees_schedule WHERE employee_id = " + employee_id + " AND shift_date = '"
+                    + java.time.LocalDate.now() + "';";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
@@ -669,7 +683,8 @@ public class ManagerDB {
                     String realtime_out = rs.getString("realtime_out");
                     Boolean undertime = rs.getBoolean("undertime");
                     connection.close();
-                    return new EmployeeShift(employee_id, date, start_shift, end_shift, realtime_in, realtime_out, undertime);
+                    return new EmployeeShift(employee_id, date, start_shift, end_shift, realtime_in, realtime_out,
+                            undertime);
                 }
                 return null;
             } catch (Exception e) {
@@ -725,7 +740,8 @@ public class ManagerDB {
 
     public void deleteOrderItem(int order_id, int product_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "DELETE FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id + ";";
+            String query = "DELETE FROM orders_items WHERE order_id = " + order_id + " AND product_id = " + product_id
+                    + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -801,7 +817,7 @@ public class ManagerDB {
 
     public void updateProductAvailability(int product_id, Boolean active) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE products SET active = "+ active + " WHERE product_id = " + product_id + ";";
+            String query = "UPDATE products SET active = " + active + " WHERE product_id = " + product_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -815,7 +831,7 @@ public class ManagerDB {
 
     public void updateMenuAvailability(int menu_id, Boolean active) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE menus SET active = "+ active + " WHERE menu_id = " + menu_id + ";";
+            String query = "UPDATE menus SET active = " + active + " WHERE menu_id = " + menu_id + ";";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
