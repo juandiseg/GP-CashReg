@@ -17,11 +17,13 @@ public class PCategories extends AbstractPanel {
     private TableInput table;
     private Tables panel2;
     private int order_id;
+    private int table_id;
     
-    public PCategories(TableInput table, Tables panel2, int order_id) {
+    public PCategories(TableInput table, Tables panel2, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;
         this.order_id = order_id;
+        this.table_id = table_id;
         
         numberCategories = theManagerDB.getAllCategoriesProducts().size();
         
@@ -51,7 +53,7 @@ public class PCategories extends AbstractPanel {
             JButton button = buttons.get(i);
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    PItems tempPanel = new PItems(table, panel2, category_id, order_id);
+                    PItems tempPanel = new PItems(table, panel2, category_id, order_id, table_id);
                     buttons.removeAll(buttons);
                     tempPanel.updateToThisPanel();
                 }
@@ -60,7 +62,7 @@ public class PCategories extends AbstractPanel {
         
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Options temp = new Options(table, panel2, thePanel, order_id);
+                Options temp = new Options(table, panel2, thePanel, order_id, table_id);
                 temp.updateToThisPanel();
             }
         });

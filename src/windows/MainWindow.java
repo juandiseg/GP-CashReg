@@ -1,9 +1,6 @@
 
 package windows;
 
-import javax.swing.JOptionPane;
-import javax.swing.border.Border;
-
 import util.NumberInput;
 
 public class MainWindow extends javax.swing.JFrame {
@@ -205,7 +202,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         new Tables(panel2, panel1, panel4, "Default");
         numberInput = new NumberInput(panel3, null);
-        options = new Options(null, null, panel4, -1);
+        options = new Options(null, null, panel4, -1, -1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

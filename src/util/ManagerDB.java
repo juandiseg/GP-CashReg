@@ -15,8 +15,8 @@ import java.sql.ResultSet;
 public class ManagerDB {
 
     private final static String url = "jdbc:mysql://localhost:3306/beatneat";
-    private final static String user = "juandi"; // Change to your local user
-    private final static String password = "Juandi"; // Change to your local password
+    private final static String user = "isabel"; // Change to your local user
+    private final static String password = "Isabel"; // Change to your local password
 
     public ArrayList<Table> getTables() {
         ArrayList<Table> tempList = new ArrayList<Table>();
@@ -28,6 +28,7 @@ public class ManagerDB {
                     int table_id = rs.getInt("table_id");
                     int order_id = rs.getInt("order_id");
                     Boolean is_empty = rs.getBoolean("is_empty");
+                    if (order_id == 0) order_id = -1;
                     tempList.add(new Table(table_id, order_id, is_empty));
                 }
                 connection.close();
@@ -130,8 +131,8 @@ public class ManagerDB {
     public ArrayList<OrderItems> getOrderItems(int order_id) {
         ArrayList<OrderItems> tempList = new ArrayList<OrderItems>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM orders_items NATURAL JOIN products WHERE order_id = " + order_id
-                    + " AND active = true";
+            String query = "SELECT products.product_id, products.name, products.price, products.active, orders_items.quantity FROM products INNER JOIN orders_items " +
+                "ON products.product_id = orders_items.product_id WHERE orders_items.order_id = " + order_id + " AND active = 1;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -156,8 +157,8 @@ public class ManagerDB {
     public ArrayList<OrderMenus> getOrderMenus(int order_id) {
         ArrayList<OrderMenus> tempList = new ArrayList<OrderMenus>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active, orders_menus.quantity FROM menus INNER JOIN orders_menus ON menus.menu_id = orders_menus.menu_id WHERE orders_menus.order_id = "
-                    + order_id + ";";
+            String query = "SELECT menus.menu_id, menus.name, menus.price, menus.active, orders_menus.quantity FROM menus INNER JOIN orders_menus ON menus.menu_id = orders_menus.menu_id " +
+            "WHERE orders_menus.order_id = " + order_id + " AND active = 1;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
@@ -226,9 +227,10 @@ public class ManagerDB {
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
-                    int orderID = rs.getInt("order_id");
+                    int order_id = rs.getInt("order_id");
+                    if (order_id == 0) order_id = -1;
                     connection.close();
-                    return orderID;
+                    return order_id;
                 }
                 return -1;
             } catch (Exception e) {
@@ -767,6 +769,7 @@ public class ManagerDB {
         }
     }
 
+    // also get the ones repeatted?
     public ArrayList<Product> getAllProducts() {
         ArrayList<Product> tempList = new ArrayList<Product>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {

@@ -44,7 +44,7 @@ public class TableInput {
         JPanel labelPanel = new JPanel();
         JPanel tablePanel = new JPanel();
         JLabel label = new JLabel("Order: " + order_id);
-        if (order_id != 0) label.setText("Order: " + order_id);
+        if (order_id != -1) label.setText("Order: " + order_id);
         else label.setText("Empty Table");
 
         thePanel.setBorder(null);

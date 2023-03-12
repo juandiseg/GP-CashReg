@@ -18,12 +18,14 @@ public class MItems extends AbstractPanel {
     private int numberItems;
     private int category_id;
     private int order_id;
+    private int table_id;
     
-    public MItems(TableInput table, Tables panel2, int category_id, int order_id) {
+    public MItems(TableInput table, Tables panel2, int category_id, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;
         this.category_id = category_id;
         this.order_id = order_id;
+        this.table_id = table_id;
         this.numberItems  = theManagerDB.getMenusByCategory(category_id).size();
         
         if (theManagerDB.getMenusByCategory(category_id).size()+1 < 3) thePanel.setLayout(new GridLayout(1, numberItems+1));
@@ -74,7 +76,7 @@ public class MItems extends AbstractPanel {
                         }
                     }
                     buttons.removeAll(buttons);
-                    Options temp = new Options(table, panel2, thePanel, order_id);
+                    Options temp = new Options(table, panel2, thePanel, order_id, table_id);
                     temp.updateToThisPanel();
                     table.updateTable(menu_id, menu_name, menu_price, false);
                 }
@@ -83,7 +85,7 @@ public class MItems extends AbstractPanel {
         
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                MCategories categories = new MCategories(table, panel2, order_id);
+                MCategories categories = new MCategories(table, panel2, order_id, table_id);
                 categories.updateToThisPanel();
             }
         });

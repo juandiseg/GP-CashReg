@@ -2,10 +2,7 @@ package windows;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -34,11 +31,9 @@ public class Availability {
     private JButton button2 = new JButton("Menus");
     private ManagerDB theManagerDB = new ManagerDB();
     private JPanel thePanel;
-    private JPanel panel4;
 
     public Availability(JPanel panel1, JPanel panel4) {
         thePanel = panel1;
-        this.panel4 = panel4;
         this.products = theManagerDB.getAllProducts();
         this.menus = theManagerDB.getAllMenus();
         

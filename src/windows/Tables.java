@@ -51,7 +51,8 @@ public class Tables implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         for (JButton button : buttons) {
             for (Table table : tables) {
-                if ((e.getSource().equals(button)) && (button.getText().equals("Table " + table.getID()))) {
+                int table_id = table.getID();
+                if ((e.getSource().equals(button)) && (button.getText().equals("Table " + table_id))) {
                     ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(table.getOrder());
                     ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(table.getOrder());
                     if (name == "Add") {
@@ -63,11 +64,11 @@ public class Tables implements ActionListener {
                         panel1.repaint();
                         
                         panel4.removeAll();
-                        new Options(t, this, panel4, order_id);
+                        new Options(t, this, panel4, order_id, table_id);
                         panel4.revalidate();
                         panel4.repaint();
                     } else if (name == "Tables") {
-                        int order_id = theManagerDB.getOrderID(table.getID());
+                        int order_id = theManagerDB.getOrderID(table_id);
                         panel1.removeAll();
                         TableInput t = new TableInput(panel1, order_id, orderItems, orderMenus);
                         t.clickableTable();
@@ -75,12 +76,12 @@ public class Tables implements ActionListener {
                         panel1.repaint();
                         
                         panel4.removeAll();
-                        new Options(t, this, panel4, order_id);
+                        new Options(t, this, panel4, order_id, table_id);
                         panel4.revalidate();
                         panel4.repaint();
                     }
                     else if (name == "Default") {
-                        int order_id = theManagerDB.getOrderID(table.getID());
+                        int order_id = theManagerDB.getOrderID(table_id);
                         panel1.removeAll();
                         new TableInput(panel1, order_id, orderItems, orderMenus);
                         panel1.revalidate();
@@ -101,7 +102,7 @@ public class Tables implements ActionListener {
             panel1.repaint();
             
             panel4.removeAll();
-            new Options(t, this, panel4, order_id);
+            new Options(t, this, panel4, order_id, -1);
             panel4.revalidate();
             panel4.repaint();
         }

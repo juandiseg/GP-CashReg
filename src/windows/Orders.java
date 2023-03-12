@@ -76,6 +76,7 @@ public class Orders implements ActionListener {
         } else {
             for (int i = 0; i < orders.size(); i++) {
                 int order_id = orders.get(i);
+                int table_id = theManagerDB.getTableID(order_id);
                 
                 for (JButton button : buttons) {
                     if ((e.getSource().equals(button)) && (button.getText().equals("Order " + order_id))) {
@@ -95,7 +96,7 @@ public class Orders implements ActionListener {
                             panel1.repaint();
                         } else {
                             panel4.removeAll();
-                            new Options(t, null, panel4, order_id);
+                            new Options(t, null, panel4, order_id, table_id);
                             panel4.revalidate();
                             panel4.repaint();
                         }
