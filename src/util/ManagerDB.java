@@ -28,7 +28,6 @@ public class ManagerDB {
                     int table_id = rs.getInt("table_id");
                     int order_id = rs.getInt("order_id");
                     Boolean is_empty = rs.getBoolean("is_empty");
-                    if (order_id == 0) order_id = -1;
                     tempList.add(new Table(table_id, order_id, is_empty));
                 }
                 connection.close();
@@ -223,12 +222,11 @@ public class ManagerDB {
 
     public int getOrderID(int table_id) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT order_id FROM tables WHERE table_id =  " + table_id + ";";
+            String query = "SELECT order_id FROM tables WHERE table_id =  " + table_id + " AND order_id IS NOT NULL;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
                     int order_id = rs.getInt("order_id");
-                    if (order_id == 0) order_id = -1;
                     connection.close();
                     return order_id;
                 }

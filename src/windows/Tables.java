@@ -53,8 +53,8 @@ public class Tables implements ActionListener {
             for (Table table : tables) {
                 int table_id = table.getID();
                 if ((e.getSource().equals(button)) && (button.getText().equals("Table " + table_id))) {
-                    ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(table.getOrder());
-                    ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(table.getOrder());
+                    ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(theManagerDB.getOrderID(table_id));
+                    ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(theManagerDB.getOrderID(table_id));
                     if (name == "Add") {
                         int order_id = theManagerDB.getLastOrderID()+1;
                         panel1.removeAll();
