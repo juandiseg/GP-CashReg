@@ -9,14 +9,13 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import objects.OrderItems;
 import objects.OrderMenus;
-import objects.Table;
 import util.ManagerDB;
 import util.TableInput;
 
 public class Tables implements ActionListener {
     
     private ManagerDB theManagerDB = new ManagerDB();
-    private ArrayList<Table> tables = theManagerDB.getTables();
+    private ArrayList<Integer> tablesID = theManagerDB.getTablesIDs();
     private ArrayList<JButton> buttons = new ArrayList<>();
     private ArrayList<Integer> occupiedTables = theManagerDB.getOccupiedTables();
     private JButton takeAway = new JButton("Take Away");
@@ -31,11 +30,11 @@ public class Tables implements ActionListener {
         
         panel2.setBorder(null);
         panel2.setPreferredSize(panel2.getPreferredSize());
-        if (tables.size()+1 < 9) panel2.setLayout(new GridLayout(2, tables.size()/2));
-        else panel2.setLayout(new GridLayout(3, tables.size()/3));
+        if (tablesID.size()+1 < 9) panel2.setLayout(new GridLayout(2, tablesID.size()/2));
+        else panel2.setLayout(new GridLayout(3, tablesID.size()/3));
         
-        for (Table table : tables) {
-            JButton button = new JButton("Table " + table.getID());
+        for (Integer table_id : tablesID) {
+            JButton button = new JButton("Table " + table_id);
             panel2.add(button);
             buttons.add(button);
             button.addActionListener(this);
@@ -50,8 +49,7 @@ public class Tables implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         for (JButton button : buttons) {
-            for (Table table : tables) {
-                int table_id = table.getID();
+            for (Integer table_id : tablesID) {
                 if ((e.getSource().equals(button)) && (button.getText().equals("Table " + table_id))) {
                     ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(theManagerDB.getOrderID(table_id));
                     ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(theManagerDB.getOrderID(table_id));
@@ -119,8 +117,8 @@ public class Tables implements ActionListener {
     }
 
     public void updateTablesPanel(int table_id) {
-        for (Table table : tables) {
-            if (table.getID() == table_id) {
+        for (Integer table : tablesID) {
+            if (table == table_id) {
                 occupiedTables.add(table_id);
             }
         }

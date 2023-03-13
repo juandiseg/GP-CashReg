@@ -18,17 +18,15 @@ public class ManagerDB {
     private final static String user = "isabel"; // Change to your local user
     private final static String password = "Isabel"; // Change to your local password
 
-    public ArrayList<Table> getTables() {
-        ArrayList<Table> tempList = new ArrayList<Table>();
+    public ArrayList<Integer> getTablesIDs() {
+        ArrayList<Integer> tempList = new ArrayList<Integer>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             String query = "SELECT * FROM tables;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
                     int table_id = rs.getInt("table_id");
-                    int order_id = rs.getInt("order_id");
-                    Boolean is_empty = rs.getBoolean("is_empty");
-                    tempList.add(new Table(table_id, order_id, is_empty));
+                    tempList.add(table_id);
                 }
                 connection.close();
                 return tempList;
