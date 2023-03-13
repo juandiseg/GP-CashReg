@@ -819,7 +819,7 @@ public class ManagerDB {
                     float price = rs.getFloat("price");
                     Boolean active = rs.getBoolean("active");
                     connection.close();
-                    new Product(product_id, name, price, active);
+                    return new Product(product_id, name, price, active);
                 }
                 return null;
             } catch (Exception e) {
@@ -841,7 +841,7 @@ public class ManagerDB {
                     float price = rs.getFloat("price");
                     Boolean active = rs.getBoolean("active");
                     connection.close();
-                    new Menu(menu_id, name, price, active);
+                     return new Menu(menu_id, name, price, active);
                 }
                 return null;
             } catch (Exception e) {
