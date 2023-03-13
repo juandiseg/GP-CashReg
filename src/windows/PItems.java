@@ -67,7 +67,6 @@ public class PItems extends AbstractPanel {
                         }
                     }
                     else if (!theManagerDB.newOrder(order_id)) {
-                        System.out.println("not new order");
                         if (theManagerDB.checkProductInOrder(product_id, order_id)) {
                             theManagerDB.updateProductQuantity(order_id, product_id);
                         }

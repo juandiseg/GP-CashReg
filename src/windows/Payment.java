@@ -26,6 +26,7 @@ import objects.OrderItems;
 import objects.OrderMenus;
 import util.ManagerDB;
 import util.NumberInput;
+import util.TableInput;
 
 public class Payment implements ActionListener {
 
@@ -49,6 +50,7 @@ public class Payment implements ActionListener {
     private JTextField textField = new JTextField(15);
     private JButton okButton = new JButton("Ok");
     private JButton payButton = new JButton("Pay");
+    private float change;
     
     public Payment(JPanel panel1, JPanel panel2, JPanel panel4, NumberInput numberInput, int order_id) {
         this.thePanel = panel1;
@@ -147,15 +149,22 @@ public class Payment implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        int table_id = theManagerDB.getTableID(order_id);
         if (e.getSource().equals(button1)) {
             Object[] options = {"Ok", "Cancel"};
             int n = JOptionPane.showOptionDialog(null, "Insert Card", "Card Payment", 
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
 
             if (n == 0) {
-                Object[] options2 = {"Yes", "No"};
-                int n2 = JOptionPane.showOptionDialog(null, "Do you want a receipt?", null,
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options2, null);
+                theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), false);
+                if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
+                new Receipt(order_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), df.format(getTotal()), "0.00");
+
+                Object[] options2 = {"Print receipt", "Send by email", "Both"};
+                int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
+                
+                setDefaultSettings();
             }
         }
 
@@ -179,7 +188,7 @@ public class Payment implements ActionListener {
         if (e.getSource().equals(okButton)) {
             if (!textField.getText().isEmpty() && Float.parseFloat(textField.getText()) >= getTotal()) {
                 float temp = Float.parseFloat(textField.getText());
-                float change = temp - (getSubtotal() + getTax());
+                change = temp - (getSubtotal() + getTax());
                 labelChange.setText("Change: " + df.format(change) + "€");
                 payButton.addActionListener(this);
                 panel2.remove(payButton);
@@ -194,10 +203,34 @@ public class Payment implements ActionListener {
         }
 
         if (e.getSource().equals(payButton)) {
-            Object[] options = {"Yes", "No"};
-            int n = JOptionPane.showOptionDialog(null, "Do you want a receipt?", "Receipt",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+            theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), true);
+            if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
+            new Receipt(order_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), textField.getText(), df.format(change));
 
+            Object[] options2 = {"Print receipt", "Send by email", "Both"};
+            int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
+
+            setDefaultSettings();
         }
+    }
+
+    private void setDefaultSettings() {
+        ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(-1);
+        ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(-1);
+        thePanel.removeAll();
+        new TableInput(thePanel, -1, orderItems, orderMenus);
+        thePanel.revalidate();
+        thePanel.repaint();
+
+        panel2.removeAll();
+        new Tables(panel2, panel2, panel4, null);
+        panel2.revalidate();
+        panel2.repaint();
+
+        panel4.removeAll();
+        new Options(null, null, panel4, -1, -1);
+        panel4.revalidate();
+        panel4.repaint();
     }
 }

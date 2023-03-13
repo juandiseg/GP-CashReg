@@ -274,6 +274,12 @@ public class MainWindow extends javax.swing.JFrame {
         panel2.repaint();
     }//GEN-LAST:event_availabilityButtonActionPerformed
 
+    public void goToDefaultMenu() {
+        removeAll();
+        revalidate();
+        repaint();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton availabilityButton;
