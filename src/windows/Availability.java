@@ -34,8 +34,8 @@ public class Availability {
 
     public Availability(JPanel panel1, JPanel panel4) {
         thePanel = panel1;
-        this.products = theManagerDB.getAllProducts();
-        this.menus = theManagerDB.getAllMenus();
+        this.products = theManagerDB.productAvailability();
+        this.menus = theManagerDB.menuAvailability();
         
         thePanel.setBorder(null);
         thePanel.setPreferredSize(panel1.getSize());

@@ -768,20 +768,39 @@ public class ManagerDB {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-
-    // also get the ones repeatted?
-    public ArrayList<Product> getAllProducts() {
+    
+    public ArrayList<Product> productAvailability() {
         ArrayList<Product> tempList = new ArrayList<Product>();
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM products;";
+            String query = "SELECT product_id, MAX(product_date) AS date FROM products GROUP BY product_id;";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
                 while (rs.next()) {
                     int product_id = rs.getInt("product_id");
-                    String name = rs.getString("name");
-                    float price = rs.getFloat("price");
-                    Boolean active = rs.getBoolean("active");
-                    tempList.add(new Product(product_id, name, price, active));
+                    String date = rs.getString("date");
+                    tempList.add(activeProduct(product_id, date));
+                }
+                connection.close();
+                return tempList;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+    
+    public ArrayList<Menu> menuAvailability() {
+        ArrayList<Menu> tempList = new ArrayList<Menu>();
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT menu_id, MAX(menu_date) AS date FROM menus GROUP BY menu_id;";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    int menu_id = rs.getInt("menu_id");
+                    String date = rs.getString("date");
+                    tempList.add(activeMenu(menu_id, date));
                 }
                 connection.close();
                 return tempList;
@@ -794,21 +813,41 @@ public class ManagerDB {
         }
     }
 
-    public ArrayList<Menu> getAllMenus() {
-        ArrayList<Menu> tempList = new ArrayList<Menu>();
+    private Product activeProduct(int product_id, String date) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "SELECT * FROM menus;";
+            String query = "SELECT * FROM products WHERE product_id = " + product_id + " AND product_date = '" + date + "';";
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    int menu_id = rs.getInt("menu_id");
+                if (rs.next()) {
                     String name = rs.getString("name");
                     float price = rs.getFloat("price");
                     Boolean active = rs.getBoolean("active");
-                    tempList.add(new Menu(menu_id, name, price, active));
+                    connection.close();
+                    new Product(product_id, name, price, active);
                 }
-                connection.close();
-                return tempList;
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private Menu activeMenu(int menu_id, String date) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT * FROM menus WHERE menu_id = " + menu_id + " AND menu_date = '" + date + "';";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String name = rs.getString("name");
+                    float price = rs.getFloat("price");
+                    Boolean active = rs.getBoolean("active");
+                    connection.close();
+                    new Menu(menu_id, name, price, active);
+                }
+                return null;
             } catch (Exception e) {
                 System.out.println(e);
                 return null;
@@ -820,7 +859,7 @@ public class ManagerDB {
 
     public void updateProductAvailability(int product_id, Boolean active) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE products SET active = " + active + " WHERE product_id = " + product_id + ";";
+            String query = "UPDATE products SET active = " + active + " WHERE product_id = " + product_id + " AND product_date = '" + maxProductDate(product_id) + "';";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
@@ -834,12 +873,52 @@ public class ManagerDB {
 
     public void updateMenuAvailability(int menu_id, Boolean active) {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            String query = "UPDATE menus SET active = " + active + " WHERE menu_id = " + menu_id + ";";
+            String query = "UPDATE menus SET active = " + active + " WHERE menu_id = " + menu_id + " AND menu_date = '" + maxMenuDate(menu_id) + "';";
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeUpdate(query);
                 connection.close();
             } catch (Exception e) {
                 System.out.println(e);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private String maxProductDate(int product_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT MAX(product_date) FROM products WHERE product_id = " + product_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String date = rs.getString("MAX(product_date)");
+                    connection.close();
+                    return date;
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+    }
+
+    private String maxMenuDate(int menu_id) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            String query = "SELECT MAX(menu_date) FROM menus WHERE menu_id = " + menu_id + ";";
+            try (Statement stmt = connection.createStatement()) {
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    String date = rs.getString("MAX(menu_date)");
+                    connection.close();
+                    return date;
+                }
+                return null;
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
