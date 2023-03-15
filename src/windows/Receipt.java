@@ -66,7 +66,7 @@ public class Receipt {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
         Date date = new Date();
 
-        paragraph.add(new Paragraph("Eat n' Beat", titleFont));
+        paragraph.add(new Paragraph("Eat N' Beat", titleFont));
         paragraph.add(new Paragraph(formatter.format(date), subtitleFont));
         if (table_id != -1) paragraph.add(new Paragraph("Table: " + table_id, normalFont));
         else paragraph.add(new Paragraph("Take Away", normalFont));
