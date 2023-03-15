@@ -75,7 +75,7 @@ public class Receipt {
         createTable(paragraph);
         addEmptyLine(paragraph, 3);
 
-        paragraph.add(new Paragraph("Cash: " + cash + "€", normalFont));
+        paragraph.add(new Paragraph("Paid: " + cash + "€", normalFont));
         paragraph.add(new Paragraph("Change: " + change + "€", normalFont));
         
         addEmptyLine(paragraph, 5);
