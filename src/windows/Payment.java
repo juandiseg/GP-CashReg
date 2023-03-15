@@ -158,7 +158,7 @@ public class Payment implements ActionListener {
             if (n == 0) {
                 theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), false);
                 if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
-                new Receipt(order_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), df.format(getTotal()), "0.00");
+                new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), df.format(getTotal()), "0.00");
 
                 Object[] options2 = {"Print receipt", "Send by email", "Both"};
                 int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
@@ -205,7 +205,7 @@ public class Payment implements ActionListener {
         if (e.getSource().equals(payButton)) {
             theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), true);
             if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
-            new Receipt(order_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), textField.getText(), df.format(change));
+            new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), textField.getText(), df.format(change));
 
             Object[] options2 = {"Print receipt", "Send by email", "Both"};
             int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",

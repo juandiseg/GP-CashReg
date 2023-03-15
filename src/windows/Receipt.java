@@ -32,14 +32,16 @@ public class Receipt {
     private static Font boldFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
     private static final DecimalFormat df = new DecimalFormat("0.00");
     private int order_id;
+    private int table_id;
     private String subtotal;
     private String tax;
     private String total;
     private String cash;
     private String change;
 
-    public Receipt(int order_id, String subtotal, String tax, String total, String cash, String change) {
+    public Receipt(int order_id, int table_id, String subtotal, String tax, String total, String cash, String change) {
         this.order_id = order_id;
+        this.table_id = table_id;
         this.subtotal = subtotal;
         this.tax = tax;
         this.total = total;
@@ -52,7 +54,7 @@ public class Receipt {
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(path));
             document.open();
-            addText(document); // for some reason can't align
+            addText(document);
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,6 +68,8 @@ public class Receipt {
 
         paragraph.add(new Paragraph("Eat n' Beat", titleFont));
         paragraph.add(new Paragraph(formatter.format(date), subtitleFont));
+        if (table_id != -1) paragraph.add(new Paragraph("Table: " + table_id, normalFont));
+        else paragraph.add(new Paragraph("Take Away", normalFont));
 
         addEmptyLine(paragraph, 2);
         createTable(paragraph);
