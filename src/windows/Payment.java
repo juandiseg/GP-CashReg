@@ -33,11 +33,12 @@ public class Payment implements ActionListener {
     private ManagerDB theManagerDB = new ManagerDB();
     private int order_id;
     private JTable t = new JTable() {
-        public boolean isCellEditable(int row, int column){  
-            return false;  
+        public boolean isCellEditable(int row, int column) {
+            return false;
         }
     };
-    private DefaultTableModel model = new DefaultTableModel(new String[] { "Product", "Quantity", "Price", "Value" }, 0);
+    private DefaultTableModel model = new DefaultTableModel(new String[] { "Product", "Quantity", "Price", "Value" },
+            0);
     private JButton button1 = new JButton("Card");
     private JButton button2 = new JButton("Cash");
     private static final DecimalFormat df = new DecimalFormat("0.00");
@@ -51,14 +52,14 @@ public class Payment implements ActionListener {
     private JButton okButton = new JButton("Ok");
     private JButton payButton = new JButton("Pay");
     private float change;
-    
+
     public Payment(JPanel panel1, JPanel panel2, JPanel panel4, NumberInput numberInput, int order_id) {
         this.thePanel = panel1;
         this.panel2 = panel2;
         this.panel4 = panel4;
         this.numberInput = numberInput;
         this.order_id = order_id;
-        
+
         thePanel.setBorder(null);
         thePanel.setSize(thePanel.getPreferredSize());
         thePanel.setLayout(new BorderLayout());
@@ -75,12 +76,16 @@ public class Payment implements ActionListener {
         tablePanel.setLayout(new GridLayout());
         JLabel label = new JLabel("Order: " + order_id);
         TableColumnModel columnModel = t.getColumnModel();
-        
+
         for (OrderItems item : orderItems) {
-            model.addRow(new String[] {item.getName(), Integer.toString(item.getQuantity()), df.format(item.getProduct().getPrice())+"€", df.format(item.getProduct().getPrice()*item.getQuantity())+"€"});
+            model.addRow(new String[] { item.getName(), Integer.toString(item.getQuantity()),
+                    df.format(item.getProduct().getPrice()) + "€",
+                    df.format(item.getProduct().getPrice() * item.getQuantity()) + "€" });
         }
         for (OrderMenus menu : orderMenus) {
-            model.addRow(new String[] {menu.getName(), Integer.toString(menu.getQuantity()), df.format(menu.getMenu().getPrice())+"€", df.format(menu.getMenu().getPrice()*menu.getQuantity())+"€"});
+            model.addRow(new String[] { menu.getName(), Integer.toString(menu.getQuantity()),
+                    df.format(menu.getMenu().getPrice()) + "€",
+                    df.format(menu.getMenu().getPrice() * menu.getQuantity()) + "€" });
         }
 
         t.setModel(model);
@@ -100,8 +105,8 @@ public class Payment implements ActionListener {
 
     private void createInvoice() {
         JTextArea textArea = new JTextArea("\n\n     SUBTOTAL: " + df.format(getSubtotal()) + "€ \n" +
-                                            "     TAX: " + df.format(getTax()) + "€ \n" +
-                                            "     TOTAL: " + df.format(getTotal()) + "€", 8, 40);
+                "     TAX: " + df.format(getTax()) + "€ \n" +
+                "     TOTAL: " + df.format(getTotal()) + "€", 8, 40);
         textArea.setEditable(false);
         JPanel textPanel = new JPanel();
         JPanel buttonsPanel = new JPanel();
@@ -122,7 +127,7 @@ public class Payment implements ActionListener {
         panel4.revalidate();
         panel4.repaint();
     }
-    
+
     private float getSubtotal() {
         ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
         ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
@@ -151,19 +156,21 @@ public class Payment implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int table_id = theManagerDB.getTableID(order_id);
         if (e.getSource().equals(button1)) {
-            Object[] options = {"Ok", "Cancel"};
-            int n = JOptionPane.showOptionDialog(null, "Insert Card", "Card Payment", 
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+            Object[] options = { "Ok", "Cancel" };
+            int n = JOptionPane.showOptionDialog(null, "Insert Card", "Card Payment",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
 
             if (n == 0) {
                 theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), false);
-                if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
-                new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), df.format(getTotal()), "0.00");
+                if (table_id != -1)
+                    theManagerDB.makeTableEmpty(table_id);
+                new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()),
+                        df.format(getTotal()), "0.00");
 
-                Object[] options2 = {"Print receipt", "Send by email", "Both"};
+                Object[] options2 = { "Print receipt", "Send by email", "Both" };
                 int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
-                
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
+
                 setDefaultSettings();
             }
         }
@@ -204,12 +211,14 @@ public class Payment implements ActionListener {
 
         if (e.getSource().equals(payButton)) {
             theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), true);
-            if (table_id != -1) theManagerDB.makeTableEmpty(table_id);
-            new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()), textField.getText(), df.format(change));
+            if (table_id != -1)
+                theManagerDB.makeTableEmpty(table_id);
+            new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()),
+                    textField.getText(), df.format(change));
 
-            Object[] options2 = {"Print receipt", "Send by email", "Both"};
+            Object[] options2 = { "Print receipt", "Send by email", "Both" };
             int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
 
             setDefaultSettings();
         }

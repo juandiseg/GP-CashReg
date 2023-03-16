@@ -21,7 +21,6 @@ import objects.OrderItems;
 import objects.OrderMenus;
 import util.ManagerDB;
 
-
 public class Receipt {
 
     private ManagerDB theManagerDB = new ManagerDB();
@@ -49,7 +48,7 @@ public class Receipt {
         this.change = change;
 
         path = System.getProperty("user.dir") + "/receipts/Order" + order_id + ".pdf";
-        
+
         try {
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(path));
@@ -63,13 +62,15 @@ public class Receipt {
 
     private void addText(Document document) throws DocumentException {
         Paragraph paragraph = new Paragraph();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
 
         paragraph.add(new Paragraph("Eat N' Beat", titleFont));
         paragraph.add(new Paragraph(formatter.format(date), subtitleFont));
-        if (table_id != -1) paragraph.add(new Paragraph("Table: " + table_id, normalFont));
-        else paragraph.add(new Paragraph("Take Away", normalFont));
+        if (table_id != -1)
+            paragraph.add(new Paragraph("Table: " + table_id, normalFont));
+        else
+            paragraph.add(new Paragraph("Take Away", normalFont));
 
         addEmptyLine(paragraph, 2);
         createTable(paragraph);
@@ -77,9 +78,9 @@ public class Receipt {
 
         paragraph.add(new Paragraph("Paid: " + cash + "€", normalFont));
         paragraph.add(new Paragraph("Change: " + change + "€", normalFont));
-        
+
         addEmptyLine(paragraph, 5);
-        
+
         paragraph.add(new Paragraph("Thank you for eating with us!", subtitleFont));
 
         document.add(paragraph);
@@ -90,8 +91,8 @@ public class Receipt {
         ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
         ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
         PdfPCell cell;
-        
-        table.setWidths(new int[]{2, 1, 1, 1});
+
+        table.setWidths(new int[] { 2, 1, 1, 1 });
         table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
         cell = new PdfPCell(new Phrase("Product", boldFont));
@@ -105,31 +106,30 @@ public class Receipt {
         cell = new PdfPCell(new Phrase("Price", boldFont));
         cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(cell);
-        
+
         cell = new PdfPCell(new Phrase("Value", boldFont));
         cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(cell);
 
         table.setHeaderRows(1);
 
-        
         for (OrderItems item : orderItems) {
             table.addCell(item.getName());
             table.addCell(Integer.toString(item.getQuantity()));
             table.addCell(df.format(item.getProduct().getPrice()) + "€");
-            table.addCell(df.format(item.getProduct().getPrice()*item.getQuantity())+"€");
+            table.addCell(df.format(item.getProduct().getPrice() * item.getQuantity()) + "€");
         }
         for (OrderMenus menu : orderMenus) {
             table.addCell(menu.getName());
             table.addCell(Integer.toString(menu.getQuantity()));
             table.addCell(df.format(menu.getMenu().getPrice()) + "€");
-            table.addCell(df.format(menu.getMenu().getPrice()*menu.getQuantity())+"€");
+            table.addCell(df.format(menu.getMenu().getPrice() * menu.getQuantity()) + "€");
         }
 
         for (int i = 0; i < 8; i++) {
             table.addCell(" ");
         }
-        
+
         table.addCell("");
         table.addCell("");
         cell = new PdfPCell(new Phrase("Subtotal:" + "\u00a0" + "\u00a0" + "\u00a0", boldFont));
@@ -137,7 +137,7 @@ public class Receipt {
         cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(cell);
         table.addCell(subtotal + "€");
-        
+
         table.addCell("");
         table.addCell("");
         cell = new PdfPCell(new Phrase("Tax:" + "\u00a0" + "\u00a0" + "\u00a0", boldFont));
@@ -145,7 +145,7 @@ public class Receipt {
         cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(cell);
         table.addCell(tax + "€");
-        
+
         table.addCell("");
         table.addCell("");
         cell = new PdfPCell(new Phrase("Total:" + "\u00a0" + "\u00a0" + "\u00a0", boldFont));
