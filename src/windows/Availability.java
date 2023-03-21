@@ -1,7 +1,5 @@
 package windows;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 
@@ -13,8 +11,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import objects.Ingredient;
-import objects.Menu;
-import objects.Product;
 import util.ManagerDB;
 
 public class Availability {
@@ -25,7 +21,6 @@ public class Availability {
         }
     };
     private DefaultTableModel model = new DefaultTableModel(new String[] { "Ingredient", "Inventory" }, 0);
-    private String button;
     private ArrayList<Ingredient> ingredients;
     private JButton button1 = new JButton("Products");
     private JButton button2 = new JButton("Menus");

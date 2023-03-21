@@ -15,8 +15,8 @@ import java.sql.ResultSet;
 public class ManagerDB {
 
     private final static String url = "jdbc:mysql://localhost:3306/beatneat";
-    private final static String user = "root"; // Change to your local user
-    private final static String password = ""; // Change to your local password
+    private final static String user = "isabel"; // Change to your local user
+    private final static String password = "Isabel"; // Change to your local password
 
     public ArrayList<Integer> getTablesIDs() {
         ArrayList<Integer> tempList = new ArrayList<Integer>();

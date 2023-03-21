@@ -75,7 +75,7 @@ public class Payment implements ActionListener {
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new GridLayout());
         JLabel label = new JLabel("Order: " + order_id);
-        TableColumnModel columnModel = t.getColumnModel();
+        TableColumnModel columnModel = t.getColumnModel(); 
 
         for (OrderItems item : orderItems) {
             model.addRow(new String[] { item.getName(), Integer.toString(item.getQuantity()),
