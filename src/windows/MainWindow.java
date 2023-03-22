@@ -3,6 +3,7 @@ package windows;
 
 import util.NumberInput;
 
+// Class created with NetBeans, which helps with the design, little code here is mine
 public class MainWindow extends javax.swing.JFrame {
 
     private static NumberInput numberInput;
