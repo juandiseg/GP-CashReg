@@ -1,4 +1,4 @@
-package windows;
+package util;
 
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
@@ -19,8 +19,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import objects.OrderItems;
 import objects.OrderMenus;
-import util.ManagerDB;
 
+// Class to create a pdf with the receipt of an order
 public class Receipt {
 
     private ManagerDB theManagerDB = new ManagerDB();
@@ -38,6 +38,17 @@ public class Receipt {
     private String cash;
     private String change;
 
+    /**
+     * Constructor of Receipt
+     * 
+     * @param order_id order ID we want the receipt of
+     * @param table_id table ID where the order was taken if there is one
+     * @param subtotal subtotal of the order
+     * @param tax tax that the order has
+     * @param total total of the order (subtotal + tax)
+     * @param cash if it was paid with cash or card
+     * @param change change of what it was paid
+     */
     public Receipt(int order_id, int table_id, String subtotal, String tax, String total, String cash, String change) {
         this.order_id = order_id;
         this.table_id = table_id;
@@ -47,8 +58,10 @@ public class Receipt {
         this.cash = cash;
         this.change = change;
 
+        // Path where the pdf will be plus the name of it
         path = System.getProperty("user.dir") + "/receipts/Order" + order_id + ".pdf";
 
+        // Creates the document
         try {
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(path));
@@ -60,6 +73,12 @@ public class Receipt {
         }
     }
 
+    /**
+     * The text that goes inside the pdf
+     * 
+     * @param document the document where you are writing
+     * @throws DocumentException exception in case there's any error
+     */
     private void addText(Document document) throws DocumentException {
         Paragraph paragraph = new Paragraph();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -86,6 +105,12 @@ public class Receipt {
         document.add(paragraph);
     }
 
+    /**
+     * Creates a table to show the order with all the information
+     * 
+     * @param paragraph the paragraph where the table is being written
+     * @throws DocumentException exception in case there's any error
+     */
     private void createTable(Paragraph paragraph) throws DocumentException {
         PdfPTable table = new PdfPTable(4);
         ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
@@ -126,6 +151,7 @@ public class Receipt {
             table.addCell(df.format(menu.getMenu().getPrice() * menu.getQuantity()) + "€");
         }
 
+        // Just to make some space and add all the payment information
         for (int i = 0; i < 8; i++) {
             table.addCell(" ");
         }
@@ -157,6 +183,12 @@ public class Receipt {
         paragraph.add(table);
     }
 
+    /**
+     * Easier way to add white spaces
+     * 
+     * @param paragraph paragraph where the empty lines are being added
+     * @param number the number of empty lines you want to add
+     */
     private void addEmptyLine(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));

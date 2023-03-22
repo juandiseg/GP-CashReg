@@ -12,6 +12,7 @@ import objects.OrderMenus;
 import util.ManagerDB;
 import util.TableInput;
 
+// Class to see the tables and their information
 public class Tables implements ActionListener {
     
     private ManagerDB theManagerDB = new ManagerDB();
@@ -23,6 +24,14 @@ public class Tables implements ActionListener {
     private JPanel panel4;
     private String name;
 
+    /**
+     * Constructor for Tables
+     * 
+     * @param panel2 panel where the buttons for the tables go
+     * @param panel1 panel where the information for the tables go
+     * @param panel4 panel for the option when you want to order are
+     * @param name what you want to do with the tables
+     */
     public Tables(JPanel panel2, JPanel panel1, JPanel panel4, String name) {
         this.panel1 = panel1;
         this.panel4 = panel4;
@@ -40,6 +49,7 @@ public class Tables implements ActionListener {
             button.addActionListener(this);
         }
         
+        // this button only shows when you want to add a new order
         if (name == "Add") {
             panel2.add(takeAway);
             takeAway.addActionListener(this);
@@ -53,6 +63,7 @@ public class Tables implements ActionListener {
                 if ((e.getSource().equals(button)) && (button.getText().equals("Table " + table_id))) {
                     ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(theManagerDB.getOrderID(table_id));
                     ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(theManagerDB.getOrderID(table_id));
+                    // if you want to add an order
                     if (name == "Add") {
                         int order_id = theManagerDB.getLastOrderID()+1;
                         panel1.removeAll();
@@ -65,7 +76,9 @@ public class Tables implements ActionListener {
                         new Options(t, this, panel4, order_id, table_id);
                         panel4.revalidate();
                         panel4.repaint();
-                    } else if (name == "Tables") {
+                    } 
+                    // if you are looking at the tables (you should be able to edit an order from there)
+                    else if (name == "Tables") {
                         int order_id = theManagerDB.getOrderID(table_id);
                         panel1.removeAll();
                         TableInput t = new TableInput(panel1, order_id, orderItems, orderMenus);
@@ -78,6 +91,7 @@ public class Tables implements ActionListener {
                         panel4.revalidate();
                         panel4.repaint();
                     }
+                    // if it's the default (used when you start to run the program and when you have finished paying)
                     else if (name == "Default") {
                         int order_id = theManagerDB.getOrderID(table_id);
                         panel1.removeAll();
@@ -106,6 +120,9 @@ public class Tables implements ActionListener {
         }
     }
     
+    /**
+     * To only show the free tables, if a table is occupied it will disable the button
+     */
     public void freeTables() {
         for (JButton button : buttons) {
             for (Integer table : occupiedTables) {
@@ -116,6 +133,11 @@ public class Tables implements ActionListener {
         }
     }
 
+    /**
+     * It updates the panel when the availability of a table changes (when you are making a new order)
+     * 
+     * @param table_id the table ID you want to change the availability of
+     */
     public void updateTablesPanel(int table_id) {
         for (Integer table : tablesID) {
             if (table == table_id) {

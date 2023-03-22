@@ -20,6 +20,7 @@ import javax.swing.BorderFactory;
 import util.ManagerDB;
 import util.NumberInput;
 
+// Class that allows employees to check in and out
 public class Check implements ActionListener {
     
     private ManagerDB theManagerDB = new ManagerDB();
@@ -28,6 +29,12 @@ public class Check implements ActionListener {
     private JTextField textField = new JTextField();
     private JButton button = new JButton("Ok");
 
+    /**
+     * Constructor fo Check
+     * 
+     * @param panel1 panel where the check will be displayed
+     * @param numberInput keypad to enter the employee's ID
+     */
     public Check(JPanel panel1, NumberInput numberInput) {
         this.panel1 = panel1;
         
@@ -48,8 +55,8 @@ public class Check implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(button) && !textField.getText().isEmpty()) {
             int employee_id = Integer.parseInt(textField.getText());
-            int check = theManagerDB.checkEmployeeID(employee_id);
-            if (check == 1) {
+            Boolean check = theManagerDB.checkEmployeeID(employee_id);
+            if (check) {
                 EmployeeShift employee_shift = theManagerDB.getEmployee_shift(employee_id);
                 if (employee_shift != null) {
                     if (employee_shift.getRealtime_in() == null) {

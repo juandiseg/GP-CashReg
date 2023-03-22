@@ -9,14 +9,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+// Class that creates a number keypad, where if you click it will write in a text field
 public class NumberInput extends JFrame implements ActionListener {
 	
     JTextField display;
     String[] numbers = {"1","2","3","4","5","6","7","8","9",".","0","<-"};
     ArrayList<JButton> buttons = new ArrayList<>();
 
-	
-    // Keypad constructor class
+    /**
+     * Constructor for NumberInput
+     * @param panel the panel where you want to have the keypad
+     * @param display the text field where the numbers will appear
+     */
     public NumberInput(JPanel panel, JTextField display) {
         this.display = display;
 
@@ -34,6 +38,7 @@ public class NumberInput extends JFrame implements ActionListener {
         }
     }
 
+    // makes the buttons clickable and gives them an action to perform
     public void actionPerformed(ActionEvent e) {
         if (getDisplay() != null) {
             String textThere = display.getText();
@@ -55,10 +60,20 @@ public class NumberInput extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * To get where the text will be displayed
+     * 
+     * @return the display, a text field
+     */
     public JTextField getDisplay() {
         return display;
     }
 
+    /**
+     * To set wehre the text should appear
+     * 
+     * @param display the display, a text field
+     */
     public void setDisplay(JTextField display) {
         this.display = display;
     }

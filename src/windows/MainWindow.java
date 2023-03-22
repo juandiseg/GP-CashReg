@@ -223,7 +223,6 @@ public class MainWindow extends javax.swing.JFrame {
         panel2.repaint();
     }//GEN-LAST:event_ordersButtonActionPerformed
 
-    // need to change this to a frame instead of a dialog
     private void checkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkButtonActionPerformed
         options.setDefault();
         panel1.removeAll();
@@ -264,7 +263,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void availabilityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_availabilityButtonActionPerformed
         options.setDefault();
         panel1.removeAll();
-        new Availability(panel1, panel4);
+        new Availability(panel1);
         panel1.revalidate();
         panel1.repaint();
         

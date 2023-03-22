@@ -14,6 +14,7 @@ import util.ManagerDB;
 import util.NumberInput;
 import util.TableInput;
 
+// Class to see panel with the orders
 public class Orders implements ActionListener {
     
     private ManagerDB theManagerDB = new ManagerDB();
@@ -25,6 +26,15 @@ public class Orders implements ActionListener {
     private NumberInput numberInput;
     private String name;
 
+    /**
+     * Constructor for orders
+     * 
+     * @param panel2 panel where the orders will appear
+     * @param panel1 panel where the order's information will appear
+     * @param panel4 panel with the options to order will appear
+     * @param numberInput keypad that will be used when you want to change the quantity of an item in the order
+     * @param name why you are calling the class Orders
+     */
     public Orders(JPanel panel2, JPanel panel1, JPanel panel4, NumberInput numberInput, String name) {
         this.panel2 = panel2;
         this.panel1 = panel1;
@@ -48,6 +58,7 @@ public class Orders implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // if you want to delete an order
         if (name == "Delete") {
             for (int i = 0; i < orders.size(); i++) {
                 int order_id = orders.get(i);
@@ -73,7 +84,9 @@ public class Orders implements ActionListener {
                     }
                 }
             }
-        } else {
+        } 
+        // if you don't want to delete an order then it will show the information of the order and you can edit it
+        else {
             for (int i = 0; i < orders.size(); i++) {
                 int order_id = orders.get(i);
                 int table_id = theManagerDB.getTableID(order_id);
@@ -89,6 +102,7 @@ public class Orders implements ActionListener {
                         panel1.revalidate();
                         panel1.repaint();
 
+                        // if what you clicked was "Payment" it will direct you to the Payment layout
                         if (name == "Payment") {
                             panel1.removeAll();
                             new Payment(panel1, panel2, panel4, numberInput, order_id);

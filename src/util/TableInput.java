@@ -29,7 +29,7 @@ public class TableInput {
     private ManagerDB theManagerDB = new ManagerDB(); 
     
     /**
-     * Constructor of AbstractTable
+     * Constructor of TableInput
      * 
      * @param thePanel panel where the table will go
      * @param order_id integer representing the order ID
@@ -159,7 +159,7 @@ public class TableInput {
                 for (OrderItems item : orderItems) {
                     if (item.getName() == String.valueOf(t.getValueAt(row, 0))) {
                         item.setQuantity(temp);
-                        theManagerDB.setProductQuantity(order_id, item.getProduct().getId(), temp);
+                        theManagerDB.setProductQuantity(order_id, item.getProduct().getID(), temp);
                         model.setValueAt(textField.getText(), row, 1);
                         t.revalidate();
                         t.repaint();
@@ -196,7 +196,7 @@ public class TableInput {
             if (item.getName() == String.valueOf(t.getValueAt(row, 0))) {
                 try {
                     theManagerDB.makeTableEmpty(table_id);
-                    theManagerDB.deleteOrderItem(order_id, item.getProduct().getId());
+                    theManagerDB.deleteOrderItem(order_id, item.getProduct().getID());
                     theManagerDB.makeTableOccupied(order_id, table_id);
                     model.removeRow(row);
                     t.revalidate();

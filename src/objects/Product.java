@@ -13,7 +13,7 @@ public class Product {
         this.active = active;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 

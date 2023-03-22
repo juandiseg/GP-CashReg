@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import util.AbstractPanel;
 import util.TableInput;
 
+// Class to dispaly all the items a product's category has
 public class MItems extends AbstractPanel {
     
     private ArrayList<JButton> buttons = new ArrayList<>();
@@ -20,6 +21,15 @@ public class MItems extends AbstractPanel {
     private int order_id;
     private int table_id;
     
+    /**
+     * Constructor for MItems
+     * 
+     * @param table table where the order's information is
+     * @param panel2 panel where the tables are
+     * @param category_id category ID of the items you want
+     * @param order_id order ID of the current order you are making
+     * @param table_id table ID of the order you are making
+     */
     public MItems(TableInput table, Tables panel2, int category_id, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;
@@ -60,7 +70,7 @@ public class MItems extends AbstractPanel {
                 public void actionPerformed(ActionEvent e) {
                     if (theManagerDB.newOrder(order_id)) {
                         int table_id = theManagerDB.getTableID(order_id);
-                        theManagerDB.addNewOrder(order_id, menu_id);
+                        theManagerDB.addNewOrder(order_id);
                         theManagerDB.addOrderMenu(order_id, menu_id);
                         if (table_id != -1) {
                             theManagerDB.makeTableOccupied(order_id, table_id);

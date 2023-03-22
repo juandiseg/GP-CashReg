@@ -26,8 +26,11 @@ import objects.OrderItems;
 import objects.OrderMenus;
 import util.ManagerDB;
 import util.NumberInput;
+import util.Receipt;
 import util.TableInput;
 
+// Class to pay an order
+// whenever you pay, a pdf with the receipt will be created and added to the folder receipts
 public class Payment implements ActionListener {
 
     private ManagerDB theManagerDB = new ManagerDB();
@@ -53,6 +56,15 @@ public class Payment implements ActionListener {
     private JButton payButton = new JButton("Pay");
     private float change;
 
+    /**
+     * Constructor of Payment
+     * 
+     * @param panel1 panel where the order's information will be displayed
+     * @param panel2 panel where if you are paying with cash the change functionality will be displayed
+     * @param panel4 panel where the payment information is and where you will be able to choose between card or cash
+     * @param numberInput keypad to enter the change if you are paying with cash
+     * @param order_id order ID of the order you want to pay
+     */
     public Payment(JPanel panel1, JPanel panel2, JPanel panel4, NumberInput numberInput, int order_id) {
         this.thePanel = panel1;
         this.panel2 = panel2;
@@ -68,6 +80,9 @@ public class Payment implements ActionListener {
         createInvoice();
     }
 
+    /**
+     * Creates the table with all the order's information
+     */
     private void createTable() {
         ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
         ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
@@ -103,6 +118,9 @@ public class Payment implements ActionListener {
         thePanel.add(tablePanel, BorderLayout.AFTER_LINE_ENDS);
     }
 
+    /**
+     * Creates a little text area with the information of the payment (subtotal, tax and total)
+     */
     private void createInvoice() {
         JTextArea textArea = new JTextArea("\n\n     SUBTOTAL: " + df.format(getSubtotal()) + "€ \n" +
                 "     TAX: " + df.format(getTax()) + "€ \n" +
@@ -128,26 +146,38 @@ public class Payment implements ActionListener {
         panel4.repaint();
     }
 
+    /**
+     * To get the subtotal of the order
+     * @return a float with the subtotal
+     */
     private float getSubtotal() {
         ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(order_id);
         ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(order_id);
-        float total = 0;
+        float subtotal = 0;
         for (OrderItems items : orderItems) {
-            total = total + (items.getProduct().getPrice() * items.getQuantity());
+            subtotal = subtotal + (items.getProduct().getPrice() * items.getQuantity());
         }
         for (OrderMenus menus : orderMenus) {
-            total = total + (menus.getMenu().getPrice() * menus.getQuantity());
+            subtotal = subtotal + (menus.getMenu().getPrice() * menus.getQuantity());
         }
-        total = Float.parseFloat(df.format(total));
-        return total;
+        subtotal = Float.parseFloat(df.format(subtotal));
+        return subtotal;
     }
 
+    /**
+     * To get the tax, a 10% of the subtotal
+     * @return a float with the tax
+     */
     private float getTax() {
         float tax = getSubtotal() / 10;
         tax = Float.parseFloat(df.format(tax));
         return tax;
     }
 
+    /**
+     * To get the total of the order, subtotal + tax
+     * @return a float with the total
+     */
     private float getTotal() {
         return getSubtotal() + getTax();
     }
@@ -155,6 +185,7 @@ public class Payment implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         int table_id = theManagerDB.getTableID(order_id);
+        // if you want to pay with card we are just simulating you are paying
         if (e.getSource().equals(button1)) {
             Object[] options = { "Ok", "Cancel" };
             int n = JOptionPane.showOptionDialog(null, "Insert Card", "Card Payment",
@@ -167,6 +198,7 @@ public class Payment implements ActionListener {
                 new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()),
                         df.format(getTotal()), "0.00");
 
+                // we can't really print it or send it by email, so the buttons don't really work
                 Object[] options2 = { "Print receipt", "Send by email", "Both" };
                 int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
@@ -175,6 +207,7 @@ public class Payment implements ActionListener {
             }
         }
 
+        // if you want to pay with cash
         if (e.getSource().equals(button2)) {
             panel2.setPreferredSize(panel2.getSize());
             panel2.setBorder(BorderFactory.createEmptyBorder(80, 80, 0, 80));
@@ -192,6 +225,7 @@ public class Payment implements ActionListener {
             numberInput.setDisplay(textField);
         }
 
+        // when paying with cash, to get the change
         if (e.getSource().equals(okButton)) {
             if (!textField.getText().isEmpty() && Float.parseFloat(textField.getText()) >= getTotal()) {
                 float temp = Float.parseFloat(textField.getText());
@@ -209,13 +243,15 @@ public class Payment implements ActionListener {
             }
         }
 
+        // when paying with cash when you already have the change and you finally want to pay
         if (e.getSource().equals(payButton)) {
             theManagerDB.checkOutOrder(order_id, getTotal(), getTax(), getSubtotal(), true);
             if (table_id != -1)
                 theManagerDB.makeTableEmpty(table_id);
             new Receipt(order_id, table_id, df.format(getSubtotal()), df.format(getTax()), df.format(getTotal()),
                     textField.getText(), df.format(change));
-
+                    
+            // we can't really print it or send it by email, so the buttons don't really work
             Object[] options2 = { "Print receipt", "Send by email", "Both" };
             int n2 = JOptionPane.showOptionDialog(null, "Payment successful", "Receipt",
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options2, null);
@@ -224,6 +260,9 @@ public class Payment implements ActionListener {
         }
     }
 
+    /**
+     * After you pay, it will take you to the "main" panel or "default" window
+     */
     private void setDefaultSettings() {
         ArrayList<OrderItems> orderItems = theManagerDB.getOrderItems(-1);
         ArrayList<OrderMenus> orderMenus = theManagerDB.getOrderMenus(-1);

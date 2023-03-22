@@ -10,6 +10,7 @@ import util.AbstractPanel;
 import util.ManagerDB;
 import util.TableInput;
 
+// Class to show the option to order (only the buttons products and menus)
 public class Options extends AbstractPanel {
     
     private JButton button1 = new JButton("Products");
@@ -20,6 +21,15 @@ public class Options extends AbstractPanel {
     private int order_id;
     private int table_id;
     
+    /**
+     * Constructor of Options
+     * 
+     * @param table table where all the information of the order is
+     * @param panel2 panel where the table's options are
+     * @param panel panel where the options will appear
+     * @param order_id order ID you are making
+     * @param table_id table ID where the order you are making is
+     */
     public Options(TableInput table, Tables panel2, JPanel panel, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;
@@ -63,6 +73,9 @@ public class Options extends AbstractPanel {
         }
     }
 
+    /**
+     * To make the buttons not work, basically used when you are changing menus so ypu can't add more things by mistake
+     */
     public void setDefault() {
         new Options(null, null, thePanel, -1, table_id);
     }

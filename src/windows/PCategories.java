@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import util.AbstractPanel;
 import util.TableInput;
 
+// Class to display a panel with all the categories a product can have
 public class PCategories extends AbstractPanel {
     
     private ArrayList<JButton> buttons = new ArrayList<>();
@@ -19,6 +20,14 @@ public class PCategories extends AbstractPanel {
     private int order_id;
     private int table_id;
     
+    /**
+     * Constructor of PCategories
+     * 
+     * @param table tables where all the order's information is
+     * @param panel2 panel where the categories will be displayed
+     * @param order_id order ID of the current order you are making
+     * @param table_id table ID of the order you are making
+     */
     public PCategories(TableInput table, Tables panel2, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;

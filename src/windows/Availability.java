@@ -3,7 +3,6 @@ package windows;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -13,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import objects.Ingredient;
 import util.ManagerDB;
 
+// Class to see and change the product's availability
 public class Availability {
 
     private JTable t = new JTable() {
@@ -22,12 +22,15 @@ public class Availability {
     };
     private DefaultTableModel model = new DefaultTableModel(new String[] { "Ingredient", "Inventory" }, 0);
     private ArrayList<Ingredient> ingredients;
-    private JButton button1 = new JButton("Products");
-    private JButton button2 = new JButton("Menus");
     private ManagerDB theManagerDB = new ManagerDB();
     private JPanel thePanel;
 
-    public Availability(JPanel panel1, JPanel panel4) {
+    /**
+     * Constructor for Availability
+     * 
+     * @param panel1 panel where the table with the ingredient's availability will be
+     */
+    public Availability(JPanel panel1) {
         thePanel = panel1;
         this.ingredients = theManagerDB.getAllIngredients();
 
@@ -38,14 +41,11 @@ public class Availability {
         addActionListeners();
 
         createTable();
-
-        panel4.removeAll();
-        panel4.add(button1);
-        panel4.add(button2);
-        panel4.revalidate();
-        panel4.repaint();
     }
 
+    /**
+     * Creates a table with all the ingredients and if they are available or not
+     */
     private void createTable() {
         for (Ingredient tempIngr : ingredients) {
             String tempInv = "Yes";
@@ -66,6 +66,9 @@ public class Availability {
         thePanel.repaint();
     }
 
+    /**
+     * To make the table to change when an action is performed
+     */
     private void addActionListeners() {
         t.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {

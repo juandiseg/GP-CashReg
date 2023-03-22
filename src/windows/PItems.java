@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import util.AbstractPanel;
 import util.TableInput;
 
+// Class to display panel with all the items a chosen category has
 public class PItems extends AbstractPanel {
     
     private ArrayList<JButton> buttons = new ArrayList<>();
@@ -20,6 +21,15 @@ public class PItems extends AbstractPanel {
     private int order_id;
     private int table_id;
     
+    /**
+     * Constructor of PItem
+     * 
+     * @param table table where all the order's information will be displayed
+     * @param panel2 panel where all the items will appear
+     * @param category_id category ID of the products category we are trying to display
+     * @param order_id order ID of the current ID we are making
+     * @param table_id table ID of the order we are making
+     */
     public PItems(TableInput table, Tables panel2, int category_id, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;
@@ -51,7 +61,7 @@ public class PItems extends AbstractPanel {
     public void addActionListeners() {
         
         for (int i = 0; i < numberItems; i++) {
-            int product_id = theManagerDB.getProductsByCategory(category_id).get(i).getId();
+            int product_id = theManagerDB.getProductsByCategory(category_id).get(i).getID();
             String product_name = theManagerDB.getProductsByCategory(category_id).get(i).getName();
             float product_price = theManagerDB.getProductsByCategory(category_id).get(i).getPrice();
             JButton button = buttons.get(i);
@@ -59,7 +69,8 @@ public class PItems extends AbstractPanel {
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if (theManagerDB.newOrder(order_id)) {
-                        theManagerDB.addNewOrder(order_id, product_id);
+                        // because it is a new order, we have to create a new entry in order_summary in the database
+                        theManagerDB.addNewOrder(order_id);
                         theManagerDB.addOrderItem(order_id, product_id);
                         if (table_id != -1) {
                             theManagerDB.makeTableOccupied(order_id, table_id);
@@ -74,6 +85,8 @@ public class PItems extends AbstractPanel {
                             theManagerDB.addOrderItem(order_id, product_id);
                         }
                     }
+                    // when the order is added to the database we make this panel to go again to the options,
+                    // so you don't have to be all the time going back
                     buttons.removeAll(buttons);
                     Options temp = new Options(table, panel2, thePanel, order_id, table_id);
                     temp.updateToThisPanel();

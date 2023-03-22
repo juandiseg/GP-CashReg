@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import util.AbstractPanel;
 import util.TableInput;
 
+// Class to display a panel with all the menus a category has
 public class MCategories extends AbstractPanel {
     
     private ArrayList<JButton> buttons = new ArrayList<>();
@@ -19,6 +20,14 @@ public class MCategories extends AbstractPanel {
     private int order_id;
     private int table_id;
     
+    /**
+     * Constructor for MCategories
+     * 
+     * @param table table with all the information about the order
+     * @param panel2 panel where the tables are
+     * @param order_id order ID of the order you are making
+     * @param table_id table ID for the order you are making
+     */
     public MCategories(TableInput table, Tables panel2, int order_id, int table_id) {
         this.table = table;
         this.panel2 = panel2;
