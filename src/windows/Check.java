@@ -59,6 +59,7 @@ public class Check implements ActionListener {
             if (check) {
                 EmployeeShift employee_shift = theManagerDB.getEmployee_shift(employee_id);
                 if (employee_shift != null) {
+                    // if the employee is checking in
                     if (employee_shift.getRealtime_in() == null) {
                         if (theManagerDB.checkIn(employee_id)) {
                             JOptionPane.showMessageDialog(null, "Check-in successfully", "Check-in", JOptionPane.INFORMATION_MESSAGE);
@@ -67,7 +68,9 @@ public class Check implements ActionListener {
                             panel1.revalidate();
                             panel1.repaint();
                         }
-                    } else {
+                    } 
+                    // if the employee is checking out
+                    else {
                         LocalTime start_shift = LocalTime.parse(employee_shift.getStart_shift());
                         LocalTime end_shift = LocalTime.parse(employee_shift.getEnd_shift());
                         LocalTime realtime_in = LocalTime.parse(employee_shift.getRealtime_in());
